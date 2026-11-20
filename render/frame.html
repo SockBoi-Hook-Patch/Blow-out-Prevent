@@ -2,8 +2,8 @@
 <html>
 <head>
 <meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Kanit:wght@500;600&display=block" rel="stylesheet">
-<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<style>@font-face{font-family:"TA8";src:url("fonts/TA8bit.ttf") format("truetype");font-display:block}
+html,body{margin:0;background:#000}canvas{display:block}</style>
 </head>
 <body>
 <canvas id="out" width="1080" height="1920"></canvas>
@@ -31,103 +31,89 @@ function wrap(text, maxW) {
   return lines;
 }
 
-// ---- 8-bit text layer -------------------------------------------------------
-// Text is drawn on a low-res layer (360x640, 1 px = 3 output px) with antialiasing
-// thresholded away, then scaled up nearest-neighbour => chunky, readable pixel text.
-const L = 3, LW = 360, LH = 640;
+// ---- 8-bit text layer (font: "TA 8 BIT" by TA Font, f0nt.com) ---------------
+// Caption box is drawn on a low-res layer (1 px = L video px) and scaled up; text is
+// drawn at full resolution, sized so one font cell lines up with the L-px grid.
+const L = 4, LW = 1080 / L, LH = 1920 / L;
 const lo = document.createElement('canvas'); lo.width = LW; lo.height = LH;
-const l = lo.getContext('2d', { willReadFrequently: true });
-const tmp = document.createElement('canvas'); tmp.width = LW; tmp.height = 80;
-const tc = tmp.getContext('2d', { willReadFrequently: true });
+const l = lo.getContext('2d');
+// Text is drawn straight onto the 1080x1920 output with the TA 8 BIT pixel font,
+// sized so one font cell (~69 units) = L video px, so its blocks line up with the box art.
+const FS = Math.round(1000 / 69 * L);         // ~58px  (1 cell = 4px)
+const FS_EN = Math.round(1000 / 69 * 3);      // ~43px  (1 cell = 3px)
 const gseg = new Intl.Segmenter('th', { granularity: 'grapheme' });
 const graphemes = s => [...gseg.segment(s)].map(x => x.segment);
+let curFont = '';
+const setFont = f => { if (curFont !== f) { o.font = f; curFont = f; } };
+const fontOf = size => `${size}px TA8`;
+let measureSize = FS;
+const textW = text => { setFont(fontOf(measureSize)); return o.measureText(text).width / L; };
 
-// draw `text` as a binarised pixel sprite with a 1px hard drop shadow
-function pixelText(text, font, x, y, color, align, shadow = '#000') {
-  tc.clearRect(0, 0, LW, 80);
-  tc.font = font; tc.textBaseline = 'alphabetic'; tc.textAlign = 'left';
-  const w = Math.ceil(tc.measureText(text).width);
-  tc.fillStyle = '#fff'; tc.fillText(text, 2, 56);
-  const img = tc.getImageData(0, 0, LW, 80), d = img.data;
-  const sh = tc.createImageData(LW, 80), sd = sh.data;
-  const [r, g, b] = hex(color), [sr, sg, sb] = hex(shadow);
-  for (let i = 0; i < d.length; i += 4) {
-    const on = d[i + 3] >= 110;
-    d[i] = r; d[i + 1] = g; d[i + 2] = b; d[i + 3] = on ? 255 : 0;
-    sd[i] = sr; sd[i + 1] = sg; sd[i + 2] = sb; sd[i + 3] = on ? 255 : 0;
-  }
-  const x0 = Math.round(align === 'center' ? x - w / 2 : align === 'right' ? x - w : x) - 2;
-  const y0 = Math.round(y) - 56;
-  tc.putImageData(sh, 0, 0); l.drawImage(tmp, x0 + 1, y0 + 1);
-  tc.putImageData(img, 0, 0); l.drawImage(tmp, x0, y0);
-  return w;
+// pixel text, coordinates in layer units (x L = video px); hard drop shadow of one cell
+function pixelText(text, x, y, color, align, size = FS, shadow = '#000') {
+  setFont(fontOf(size)); o.textBaseline = 'alphabetic'; o.textAlign = 'left';
+  const w = o.measureText(text).width;
+  const X = Math.round(align === 'center' ? x * L - w / 2 : align === 'right' ? x * L - w : x * L);
+  const Y = Math.round(y * L), d = Math.round(size / 1000 * 69);
+  o.fillStyle = shadow; o.fillText(text, X + d, Y + d);
+  o.fillStyle = color; o.fillText(text, X, Y);
+  return w / L;
 }
-function hex(c) { const n = parseInt(c.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
 
-function wrapLo(text, font, maxW) {
-  tc.font = font;
+function wrapLo(text, maxW, size = FS) {
+  measureSize = size;
   const words = [...seg.segment(text)].map(s => s.segment);
   const lines = []; let cur = '';
   for (const w of words) {
     const test = cur + w;
-    if (tc.measureText(test).width > maxW && cur.trim()) { lines.push(cur.trim()); cur = w.trimStart(); }
+    if (textW(test.trim()) > maxW && cur.trim()) { lines.push(cur.trim()); cur = w.trimStart(); }
     else cur = test;
   }
   if (cur.trim()) lines.push(cur.trim());
   return lines;
 }
 
-// caption box in low-res coords (pixel-art y 245..307 => 490..614)
-const BOX = { x: 14, y: 490, w: 332, h: 124 };
-const TH_FONT = s => `bold ${s}px Loma, Kanit, sans-serif`;
-const EN_FONT = '8px "Press Start 2P", monospace';
-let layerKey = '';
+// caption box in layer coords (pixel-art y 245..307 => 367..461 at 1.5x)
+const BOX = { x: 10, y: 367, w: LW - 20, h: 95 };
 
 function drawTextLayer(t) {
   const c = caps.find(c => t >= c.t0 && t < c.t1);
   const reveal = c ? Math.min(1, (t - c.t0) / 0.6) : 1;
   const blink = Math.floor(t * 2.5) % 2;
-  const key = (c ? caps.indexOf(c) : -1) + ':' + Math.round(reveal * 60) + ':' + (reveal >= 1 ? blink : 0);
-  if (key === layerKey) return;
-  layerKey = key;
   l.clearRect(0, 0, LW, LH);
   if (c) {
     // 8-bit RPG dialog box
-    l.fillStyle = '#000'; l.fillRect(BOX.x - 2, BOX.y - 2, BOX.w + 4, BOX.h + 4);
+    l.fillStyle = '#000'; l.fillRect(BOX.x - 1, BOX.y - 1, BOX.w + 2, BOX.h + 2);
     l.fillStyle = '#f4f4f4'; l.fillRect(BOX.x, BOX.y, BOX.w, BOX.h);
     l.fillStyle = '#1d1d3a'; l.fillRect(BOX.x + 2, BOX.y + 2, BOX.w - 4, BOX.h - 4);
-    l.fillStyle = '#000'; [[0,0],[BOX.w-2,0],[0,BOX.h-2],[BOX.w-2,BOX.h-2]].forEach(([a,b]) => l.fillRect(BOX.x+a, BOX.y+b, 2, 2));
-    const pad = 12, maxW = BOX.w - pad * 2;
-    let size = 22, lines;
-    for (;;) {
-      lines = wrapLo(c.th, TH_FONT(size), maxW);
-      if (lines.length <= 2 || size <= 15) break;
-      size -= 1;
-    }
-    const lh = Math.round(size * 1.55), enH = c.en ? 20 : 0;
-    const total = lines.length * lh + enH;
-    let y = BOX.y + Math.round((BOX.h - total) / 2) + Math.round(size * 1.05);
+    l.fillStyle = '#000'; [[0,0],[BOX.w-1,0],[0,BOX.h-1],[BOX.w-1,BOX.h-1]].forEach(([a,b]) => l.fillRect(BOX.x+a, BOX.y+b, 1, 1));
+    o.drawImage(lo, 0, 0, LW * L, LH * L);
+    const pad = 8, maxW = BOX.w - pad * 2;
+    let lines = wrapLo(c.th, maxW).slice(0, 3);
+    let enLines = c.en ? wrapLo(c.en, maxW, FS_EN) : [];
+    const lh = 16, enLh = 12, gap = 2;
+    if (lines.length * lh + gap + enLines.length * enLh > BOX.h - 12) enLines = enLines.slice(0, 1);
+    if (lines.length * lh + gap + enLines.length * enLh > BOX.h - 12) enLines = [];
+    const total = lines.length * lh + (enLines.length ? gap + enLines.length * enLh : 0);
+    let y = BOX.y + Math.round((BOX.h - total) / 2) + 10;
     let n = Math.ceil(lines.reduce((a, ln) => a + graphemes(ln).length, 0) * reveal);
     for (const line of lines) {
       const g = graphemes(line);
-      tc.font = TH_FONT(size);
-      const fullW = tc.measureText(line).width;
+      measureSize = FS; const fullW = textW(line);
       const vis = g.slice(0, Math.max(0, n)).join(''); n -= g.length;
-      if (vis) pixelText(vis, TH_FONT(size), BOX.x + (BOX.w - fullW) / 2, y, '#ffffff', 'left');
+      if (vis) pixelText(vis, BOX.x + Math.round((BOX.w - fullW) / 2), y, '#ffffff', 'left');
       y += lh;
     }
-    if (c.en) {
-      const enLines = wrapLo(c.en.toUpperCase(), EN_FONT, maxW);
-      pixelText(enLines[0], EN_FONT, BOX.x + BOX.w / 2, y - lh + 22, '#9a9ac0', 'center');
-    }
+    y += gap - (lh - enLh);
+    for (const el of enLines) { pixelText(el, BOX.x + BOX.w / 2, y, '#8fd0ff', 'center', FS_EN); y += enLh; }
     if (reveal >= 1 && blink === 0) { // blinking "next" arrow
       l.fillStyle = '#ffcc00';
-      const ax = BOX.x + BOX.w - 16, ay = BOX.y + BOX.h - 11;
-      l.fillRect(ax, ay, 8, 2); l.fillRect(ax + 2, ay + 2, 4, 2);
+      const ax = BOX.x + BOX.w - 10, ay = BOX.y + BOX.h - 7;
+      l.fillRect(ax, ay, 5, 1); l.fillRect(ax + 1, ay + 1, 3, 1); l.fillRect(ax + 2, ay + 2, 1, 1);
     }
   }
   // credit, bottom-right
-  pixelText('Sockboi', '8px "Press Start 2P", monospace', LW - 10, LH - 8, '#ffcc00', 'right');
+  pixelText('Sockboi', LW - 6, LH - 5, '#ffcc00', 'right');
 }
 
 window.renderFrame = function (t, type) {
@@ -139,7 +125,6 @@ window.renderFrame = function (t, type) {
   o.fillStyle = 'rgba(0,0,0,0.12)';
   for (let y = S - 2; y < 1920; y += S) o.fillRect(0, y, 1080, 2);
   drawTextLayer(t);
-  o.drawImage(lo, 0, 0, LW * L, LH * L);
   return out.toDataURL(type || 'image/png').split(',')[1];
 };
 
@@ -150,7 +135,7 @@ window.renderAudio = async function () {
   return btoa(s);
 };
 
-window.ready = document.fonts.load('bold 20px Loma').then(() => document.fonts.load('20px "Press Start 2P"')).then(() => true, () => true);
+window.ready = document.fonts.load('58px TA8').then(() => true, () => true);
 </script>
 </body>
 </html>

@@ -13,6 +13,21 @@ const FPS = +opt('--fps', 30);
 const SECONDS = +opt('--seconds', 60);
 const preview = opt('--preview', null);
 
+// The TA 8 BIT font (free for commercial use, not for resale) is fetched from f0nt.com, not stored in the repo.
+const FONT = path.join(__dirname, 'fonts', 'TA8bit.ttf');
+if (!fs.existsSync(FONT)) {
+  console.log('downloading TA 8 BIT font from f0nt.com…');
+  const tmpd = fs.mkdtempSync(path.join(require('os').tmpdir(), 'ta8-'));
+  const jar = path.join(tmpd, 'jar'), zip = path.join(tmpd, 'ta.zip');
+  const page = 'https://www.f0nt.com/release/ta-8-bit/', ua = 'Mozilla/5.0 (X11; Linux x86_64) Chrome/130 Safari/537.36';
+  execFileSync('curl', ['-sfL', '-c', jar, '-b', jar, '-A', ua, page, '-o', '/dev/null']);
+  execFileSync('curl', ['-sfL', '-c', jar, '-b', jar, '-A', ua, '-e', page,
+    'https://www.f0nt.com/?dl_name=pu_chew/TA-8-bit_Free-Donate.zip', '-o', zip]);
+  fs.mkdirSync(path.dirname(FONT), { recursive: true });
+  fs.writeFileSync(FONT, execFileSync('unzip', ['-p', zip, '*TA 8 bit.ttf']));
+  fs.rmSync(tmpd, { recursive: true, force: true });
+}
+
 (async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
