@@ -1066,9 +1066,9 @@
   var captions = [
     { t0: 0, t1: 3, th: 'BOP อุปกรณ์ป้องกันการพลุ่ง ด่านสุดท้ายของความปลอดภัยในงานขุดเจาะ', en: 'The Blowout Preventer: drilling\'s last line of defense.' },
     { t0: 3, t1: 6, th: 'BOP คือวาล์วนิรภัยขนาดใหญ่ ติดอยู่บนปากหลุมเจาะ', en: 'A BOP is a giant safety valve on top of the well.' },
-    { t0: 6, t1: 9.5, th: 'ในทะเล BOP ตั้งบนปากหลุมที่พื้นทะเล ต่อท่อ Riser ขึ้นไปยังแท่นเจาะ ส่วนบนคือ Annular', en: 'Offshore it sits on the seabed wellhead; a riser links it to the rig.' },
-    { t0: 9.5, t1: 12, th: 'Annular คือยางรูปโดนัท บีบปิดรอบก้านเจาะได้ทุกรูปทรง', en: 'Annular: a rubber donut that squeezes around any pipe.' },
-    { t0: 12, t1: 16, th: 'Blind Shear Ram ตัดก้านเจาะได้ Pipe Ram ปิดรอบก้านเจาะ ข้างๆ มีท่อ Choke และ Kill', en: 'Shear rams cut, pipe rams grip; choke & kill lines on the side.' },
+    { t0: 6, t1: 9, th: 'BOP ตั้งบนปากหลุมที่พื้นทะเล บนสุดคือ Annular ยางรูปโดนัทบีบรอบก้านเจาะได้ทุกรูปทรง', en: 'On the seabed wellhead; on top, the ANNULAR rubber donut seals any pipe.' },
+    { t0: 9, t1: 12, th: 'Blind Shear Ram ใบมีดเหล็ก ตัดก้านเจาะขาดและปิดผนึกหลุมได้', en: 'BLIND SHEAR RAM: steel blades cut the pipe and seal the hole.' },
+    { t0: 12, t1: 16, th: 'Pipe Ram ปิดรอบตัวก้านเจาะ ด้านข้างมีท่อ Choke และ Kill ไว้ระบายและสูบโคลน', en: 'PIPE RAMS close on the pipe; CHOKE & KILL lines let fluid out or in.' },
     { t0: 16, t1: 20, th: 'น้ำโคลน (Mud) ถูกสูบลงในก้านเจาะ แล้วไหลกลับขึ้นทาง Annulus', en: 'Mud goes down the drill pipe and back up the annulus.' },
     { t0: 20, t1: 24, th: 'แรงดันน้ำโคลน > แรงดันชั้นหิน = หลุมปลอดภัย', en: 'Mud pressure > formation pressure = safe well.' },
     { t0: 24, t1: 27, th: 'Kick! ก๊าซจากชั้นหินแรงดันสูงไหลเข้าหลุม ระดับโคลนในบ่อเพิ่มขึ้น', en: 'KICK! High-pressure gas enters the well; the pit level rises.' },
