@@ -9,8 +9,8 @@ Single static web page, no build step. Files:
 Total loop = 60.0 s. Master clock `t` in seconds, `t ∈ [0, 60)`, wraps to 0.
 
 ## Canvas
-Logical resolution 320 x 180, `ctx.imageSmoothingEnabled=false`, scaled up by CSS (pixelated).
-Only integer coordinates. Palette: NES/PICO-8 style, limited (~16 colors).
+Logical resolution 180 x 320 (PORTRAIT 9:16), `ctx.imageSmoothingEnabled=false`, scaled up by CSS (pixelated).
+Only integer coordinates. Art area y=0..244; bottom band y=245..319 is covered by the HTML caption box and the "Sockboi" credit (bottom-right) — keep it plain/dark. Palette: NES/PICO-8 style, limited (~16 colors).
 
 ## audio.js API (global `window.ChipMusic`)
 ```js
@@ -27,7 +27,7 @@ square/triangle/noise channels like NES. The 60 s must loop with no gap.
 
 ## scenes.js API (global `window.BOPScenes`)
 ```js
-BOPScenes.draw(ctx, t)    // draw full frame for loop time t (seconds). W=320,H=180. Must be deterministic from t (no internal state required).
+BOPScenes.draw(ctx, t)    // draw full frame for loop time t (seconds). W=180,H=320. Must be deterministic from t (no internal state required).
 BOPScenes.cues            // [{t: 25.0, sfx: 'kick'}, ...] SFX cue times (integrator fires them when t crosses)
 BOPScenes.captions        // [{t0, t1, th: 'ข้อความไทย', en: 'English'}] caption bar text (integrator renders as HTML, NOT on canvas)
 ```
