@@ -217,6 +217,14 @@ function buildBOP(clip, withPipe) {
   add(g, strip(fg), M.frame);
   add(g, box(0.9, 1.6, 0.7), M.podY, -1.2, 11.2, -2.75);
   add(g, box(0.9, 1.6, 0.7), M.podB, 1.2, 11.2, -2.75);
+  let plate = null;
+  if (withPipe) { // equipment ID tag (namman.story easter egg), bolted to the front-left frame post
+    plate = new THREE.Group(); g.add(plate);
+    add(plate, box(2.12, 0.86, 0.06), lam(0x6b7280), 0, 0, -0.04);
+    add(plate, new THREE.PlaneGeometry(2.0, 2.0 * 200 / 512), new THREE.MeshLambertMaterial({ map: plateTex(), emissive: 0x3a3f46 }), 0, 0, 0.0);
+    add(plate, box(0.9, 0.12, 0.16), lam(0x6b7280), -0.95, 0, -0.1);
+    plate.position.set(-2.05, 4.75, 2.9);
+  }
   // drill pipe through the stack (set A only)
   let upper = null, lower = null, stub = null;
   if (withPipe) {
@@ -266,10 +274,61 @@ function buildBOP(clip, withPipe) {
     choke: [d.x * 2.3, 3.9, d.z * 2.3], kill: [-d.x * 2.3, 3.9, d.z * 2.3], wh: [1.4, 2.5, 0.9],
     chokeLine: [d.x * 3.1, 3.7, d.z * 3.1], top: [0, 13.4, 0],
   };
-  return { group: g, set, anchors, yP, yS, chokeDir: d };
+  return { group: g, set, anchors, yP, yS, chokeDir: d, plate };
 }
 
 // ---------------- offshore semi-submersible rig
+// ---- easter-egg textures (namman.story)
+function fitFont(x, text, weight, max, maxW) {
+  let sz = max; x.font = `${weight} ${sz}px Kanit, sans-serif`;
+  while (x.measureText(text).width > maxW && sz > 10) { sz -= 2; x.font = `${weight} ${sz}px Kanit, sans-serif`; }
+  return sz;
+}
+function canvasTex(c) {
+  const tx = new THREE.CanvasTexture(c);
+  tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = renderer.capabilities.getMaxAnisotropy(); tx.needsUpdate = true;
+  return tx;
+}
+function helideckTex() {
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 512;
+  const x = c.getContext('2d');
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  fitFont(x, 'NAMMAN.STORY', 600, 230, 985);
+  x.save(); x.translate(512, 230); x.scale(1, 2.1); // tall stencil lettering (reads well at grazing angles)
+  x.lineJoin = 'round'; x.lineWidth = 9; x.strokeStyle = '#ffd23f'; x.strokeText('NAMMAN.STORY', 0, 0);
+  x.fillStyle = '#ffffff'; x.fillText('NAMMAN.STORY', 0, 0);
+  x.restore();
+  x.fillStyle = '#ffd23f'; x.fillRect(90, 462, 844, 22);
+  // worn paint: knock out speckles & scuffs (seeded)
+  x.globalCompositeOperation = 'destination-out';
+  for (let i = 0; i < 900; i++) {
+    x.globalAlpha = 0.25 + hash(i, 301) * 0.6;
+    x.beginPath(); x.arc(hash(i, 302) * 1024, hash(i, 303) * 512, 1 + hash(i, 304) * 4.5, 0, 7); x.fill();
+  }
+  x.globalAlpha = 0.35; x.lineWidth = 6;
+  for (let i = 0; i < 14; i++) {
+    const sx = hash(i, 305) * 1024, sy = hash(i, 306) * 512;
+    x.beginPath(); x.moveTo(sx, sy); x.lineTo(sx + 60 + hash(i, 307) * 160, sy + (hash(i, 308) - 0.5) * 40); x.stroke();
+  }
+  return canvasTex(c);
+}
+function plateTex() {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 200;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 512, 200);
+  g.addColorStop(0, '#e9edf2'); g.addColorStop(0.5, '#b7c0cb'); g.addColorStop(1, '#dfe4ea');
+  x.fillStyle = g; x.fillRect(0, 0, 512, 200);
+  x.globalAlpha = 0.12; x.fillStyle = '#ffffff';
+  for (let i = 0; i < 60; i++) x.fillRect(0, hash(i, 311) * 200, 512, 1);
+  x.globalAlpha = 1; x.strokeStyle = '#4b5563'; x.lineWidth = 8; x.strokeRect(10, 10, 492, 180);
+  x.fillStyle = '#4b5563';
+  for (const [px, py] of [[30, 30], [482, 30], [30, 170], [482, 170]]) { x.beginPath(); x.arc(px, py, 8, 0, 7); x.fill(); }
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#111827';
+  fitFont(x, 'namman.story', 600, 92, 430); x.fillText('namman.story', 256, 86);
+  x.fillStyle = '#374151'; fitFont(x, 'SUBSEA BOP · 15K PSI', 600, 32, 400); x.fillText('SUBSEA BOP · 15K PSI', 256, 152);
+  return canvasTex(c);
+}
+
 function buildRig() {
   const g = new THREE.Group();
   const white = lam(0xe8ecf1), gray = lam(0x8d97a3), dark = lam(0x4b5563), orange = lam(0xf97316),
@@ -302,8 +361,11 @@ function buildRig() {
   add(g, box(15.2, 0.8, 17.2), red, -18, 25.2, 9);
   for (let r = 0; r < 3; r++) add(g, box(15.3, 0.7, 13), glow, -18, 17.2 + r * 2.6, 9);
   // helideck
-  add(g, cyl(8.5, 0.7, 8), green, -27, 27, 12);
-  add(g, new THREE.TorusGeometry(6.2, 0.25, 3, 16), yellow, -27, 27.4, 12).rotation.x = Math.PI / 2;
+  add(g, cyl(10, 0.7, 10), green, -27, 27, 12);
+  add(g, new THREE.TorusGeometry(9.0, 0.25, 3, 20), yellow, -27, 27.4, 12).rotation.x = Math.PI / 2;
+  const decalGeo = new THREE.PlaneGeometry(15.5, 15.5 * 512 / 1024); decalGeo.rotateX(-Math.PI / 2);
+  const decal = add(g, decalGeo, new THREE.MeshLambertMaterial({ map: helideckTex(), transparent: true, depthWrite: false, emissive: 0x2a2a2a }), -27, 27.37, 12);
+  decal.rotation.y = -0.38;
   add(g, cylBetween([-21, 25, 7], [-27, 26.6, 12], 0.35, 4), gray);
   // cranes
   add(g, cyl(1.2, 7, 8), yellow, 22, 18.5, -15);
@@ -339,8 +401,8 @@ const yFront = t => { const s = Math.max(0, t - 53); return SB + 12 + 6 * s + 6.
 
 // ---------------------------------------------------------------- camera
 const TITLE_DIVE = [
-  { t: 0, v: [-138, 70, 258, 0, 30, 0, 38] },
-  { t: 4.5, v: [-100, 52, 188, 0, 24, 0, 38], stop: true },
+  { t: 0, v: [-150, 112, 262, 0, 30, 0, 38] },
+  { t: 4.5, v: [-64, 84, 110, -12, 22, 4, 38], stop: true },
   { t: 6.4, v: [-42, 5, 62, 0, -2, 0, 42] },
   { t: 7.5, v: [-12, -5, 18, 0, -18, 0, 45] },
   { t: 9.7, v: [-10, -58, 16, 0, -78, 0, 45] },
@@ -379,11 +441,11 @@ const DIO = [ // local diorama coords
 ];
 const SURF1 = [{ t: 57.0, v: [-128, 62, 176, 0, 31, 0, 40] }, { t: 60.2, v: [-108, 54, 150, 0, 31, 0, 40] }];
 const SHEAR = [{ t: 60.2, v: [-12, 6, 21, 7.0, 40] }, { t: 62.8, v: [4, 7, 19, 7.2, 40] }];
-const SURF2 = [{ t: 62.8, v: [-112, 54, 152, 0, 29, 0, 40] }, { t: 66.0, v: [-132, 62, 180, 0, 28, 0, 40] }];
+const SURF2 = [{ t: 62.8, v: [-84, 96, 130, -8, 30, 0, 40] }, { t: 66.0, v: [-98, 104, 152, -8, 32, 0, 40] }];
 const HERO = [
   { t: 66.0, v: [38, 4, 31, 9.5, 40] },
-  { t: 71.0, v: [18, 6, 28, 9.8, 40] },
-  { t: 75.0, v: [2, 10, 25, 10.6, 40] },
+  { t: 71.0, v: [16, 6, 26, 8.2, 40] },
+  { t: 75.0, v: [-2, 5, 18, 5.0, 40] },
 ];
 
 // shift camera+target down by k*dist so the subject sits above screen centre (clear of caption box)
@@ -761,6 +823,7 @@ function applyA(t, v) {
     O.clipA.constant = cut <= 0 ? 1e4 : lerp(7, -0.02, cut);
   }
   O.bopA.set(bopAState(t));
+  O.bopA.plate.visible = t < 13.5 || (t >= 25.6 && t < 28) || t >= 66;
   O.riserMud.visible = (t >= 53 && t < 57) || (t >= 60.2 && t < 62.8);
   // marine snow around camera
   if (under) {
@@ -1046,7 +1109,9 @@ function chapter(ctx, t, t0, t1, num, th, en) {
     ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 24;
     ctx.font = F(600, 30); ctx.fillStyle = '#ffd166';
     ctx.fillText(`${num}  ·  ${en}`, 510, 300 - (1 - k) * 30);
-    ctx.font = F(600, 86); ctx.fillStyle = '#ffffff';
+    ctx.font = F(600, 86); const tw = ctx.measureText(th).width;
+    if (tw > 860) ctx.font = F(600, Math.floor(86 * 860 / tw));
+    ctx.fillStyle = '#ffffff';
     ctx.fillText(th, 510, 380 - (1 - k) * 30);
     ctx.fillStyle = '#ffd166'; ctx.shadowBlur = 0; rr(ctx, 510 - 50 * k, 438, 100 * k, 8, 4); ctx.fill();
   }
@@ -1272,12 +1337,13 @@ function drawOverlay(ctx, t) {
       ctx.shadowColor = 'rgba(30,10,50,0.55)'; ctx.shadowBlur = 30;
       ctx.font = F(600, 30); ctx.fillStyle = '#ffd59a';
       ctx.fillText('OFFSHORE DRILLING SAFETY', 510, 300 - (1 - k) * 30);
-      ctx.font = F(600, 250); ctx.fillStyle = '#ffffff';
-      ctx.fillText('BOP', 510, 455 - (1 - k) * 50);
+      ctx.font = F(600, 250); const tw = ctx.measureText('Subsea BOP').width;
+      ctx.font = F(600, Math.min(250, Math.floor(250 * 880 / tw))); ctx.fillStyle = '#ffffff';
+      ctx.fillText('Subsea BOP', 510, 470 - (1 - k) * 50);
       ctx.shadowBlur = 0; ctx.fillStyle = '#ffb627'; rr(ctx, 510 - 90 * k, 575, 180 * k, 10, 5); ctx.fill();
       ctx.shadowBlur = 24;
-      ctx.font = F(600, 62); ctx.fillStyle = '#ffffff'; ctx.fillText('Blowout Preventer', 510, 650);
-      ctx.font = F(400, 50); ctx.fillStyle = '#ffe3a3'; ctx.fillText('อุปกรณ์ป้องกันการพลุ่ง', 510, 728);
+      ctx.font = F(600, 62); ctx.fillStyle = '#ffffff'; ctx.fillText('Subsea Blowout Preventer', 510, 650);
+      ctx.font = F(400, 50); ctx.fillStyle = '#ffe3a3'; ctx.fillText('อุปกรณ์ป้องกันการพลุ่งใต้ทะเล', 510, 728);
       ctx.restore();
     }
   }
@@ -1285,7 +1351,7 @@ function drawOverlay(ctx, t) {
   if (t >= 5 && t < 13.5) {
     callout(ctx, t, 5.2, 6.2, [0, 30, 0], null, 330, 420, 'Drilling Rig', 'แท่นขุดเจาะ', '#f97316', 32);
     callout(ctx, t, 8.4, 11.4, [0, camera.position.y - 14, 0], null, 640, 470, 'Riser', 'ท่อไรเซอร์', '#94a3b8', 34);
-    callout(ctx, t, 11.0, 13.4, [0, SB + 12.5, 0], null, 560, 380, 'BOP Stack', 'บนปากหลุมเจาะ', '#f59e0b', 36);
+    callout(ctx, t, 11.0, 13.4, [0, SB + 12.5, 0], null, 560, 380, 'Subsea BOP Stack', 'บนปากหลุมใต้ทะเล', '#f59e0b', 34);
     depthMeter(ctx, t);
     // splash entering water
     const sp = win(t, 6.75, 7.25, 0.12, 0.25);
@@ -1301,7 +1367,7 @@ function drawOverlay(ctx, t) {
   }
   // ---- ANATOMY
   if (t >= 13 && t < 28.3) {
-    chapter(ctx, t, 13.0, 28.0, '01', 'ส่วนประกอบ BOP', 'ANATOMY');
+    chapter(ctx, t, 13.0, 28.0, '01', 'ส่วนประกอบ Subsea BOP', 'ANATOMY');
     const an = O.bopA.anchors;
     partCard(ctx, t, 14.6, 17.4, 1, 'Annular Preventer', 'แอนนูลาร์', 'ยางรูปโดนัท บีบรัดรอบก้านเจาะได้ทุกขนาด', HEX.annular, an.annular);
     partCard(ctx, t, 17.6, 20.8, 2, 'Blind Shear Ram', 'แรมตัดก้านเจาะ', 'ใบมีดเฉือนก้านเจาะ แล้วปิดผนึกหลุม', HEX.shear, an.shear);
@@ -1369,7 +1435,7 @@ function drawOverlay(ctx, t) {
       const k = eout((t - 71.2) / 0.7);
       ctx.save(); ctx.globalAlpha = fa; ctx.textAlign = 'center';
       ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 28;
-      ctx.font = F(600, 150); ctx.fillStyle = '#fff'; ctx.fillText('BOP', 510, 400 - (1 - k) * 30);
+      ctx.font = F(600, 140); ctx.fillStyle = '#fff'; ctx.fillText('Subsea BOP', 510, 400 - (1 - k) * 30);
       ctx.shadowBlur = 0; ctx.fillStyle = '#ffb627'; rr(ctx, 510 - 80 * k, 480, 160 * k, 10, 5); ctx.fill();
       ctx.shadowBlur = 24;
       ctx.font = F(600, 60); ctx.fillStyle = '#ffffff'; ctx.fillText('ด่านสุดท้ายของความปลอดภัย', 510, 560);
@@ -1390,9 +1456,9 @@ function drawOverlay(ctx, t) {
 
 // ---------------------------------------------------------------- captions & cues
 const captions = [
-  { t0: 0, t1: 4.2, th: 'BOP คืออุปกรณ์ป้องกันการพลุ่ง', en: 'BOP = Blowout Preventer' },
+  { t0: 0, t1: 4.2, th: 'Subsea BOP คืออุปกรณ์ป้องกันการพลุ่ง ติดตั้งบนปากหลุมเจาะที่พื้นทะเล', en: 'Subsea BOP = subsea blowout preventer on the seabed wellhead' },
   { t0: 4.2, t1: 8.6, th: 'แท่นขุดเจาะกลางทะเล ต่อท่อ Riser ลงสู่ก้นทะเล', en: 'A riser links the rig to the seabed' },
-  { t0: 8.6, t1: 13, th: 'BOP ติดอยู่บนปากหลุมเจาะใต้ทะเล', en: 'The BOP sits on the subsea wellhead' },
+  { t0: 8.6, t1: 13, th: 'ต่างจาก Surface BOP ที่ติดตั้งบนแท่นเจาะบนบกหรือแท่นแบบ jack-up', en: 'Unlike a surface BOP on land or jack-up rigs' },
   { t0: 13, t1: 17.4, th: 'บนสุดคือ Annular ยางรูปโดนัท บีบรัดรอบก้านเจาะ', en: 'Annular: a rubber donut that squeezes the pipe' },
   { t0: 17.4, t1: 20.8, th: 'Blind Shear Ram ใบมีดตัดก้านเจาะและปิดหลุม', en: 'Blind shear ram: blades cut the pipe & seal' },
   { t0: 20.8, t1: 24.2, th: 'Pipe Ram แรมครึ่งวงกลม ปิดรอบตัวก้านเจาะ', en: 'Pipe rams close around the pipe body' },
@@ -1407,7 +1473,7 @@ const captions = [
   { t0: 57, t1: 60.5, th: 'Blowout = Kick ที่ควบคุมไม่ได้', en: 'Blowout = an uncontrolled kick' },
   { t0: 60.5, t1: 66, th: 'ทางสุดท้าย: Blind Shear Ram ตัดก้านเจาะและปิดผนึกหลุม', en: 'Last resort: the blind shear ram cuts the pipe & seals the well' },
   { t0: 66, t1: 70.5, th: 'จำ 3 ขั้นตอน: ตรวจจับ → ปิดหลุม → ฆ่าหลุม', en: 'Detect → Shut in → Kill' },
-  { t0: 70.5, t1: 75, th: 'BOP = ด่านสุดท้ายของความปลอดภัย', en: 'BOP: the last line of defense' },
+  { t0: 70.5, t1: 75, th: 'Subsea BOP = ด่านสุดท้ายของความปลอดภัย', en: 'Subsea BOP: the last line of defense' },
 ];
 
 const cues = [
