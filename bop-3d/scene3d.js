@@ -119,13 +119,24 @@ function updateDonut(g, R, r, hs) {
 // returns { group, set(state), anchors }
 function buildBOP(clip, withPipe) {
   const g = new THREE.Group();
-  const cm = (c, o = {}) => lam(c, { clippingPlanes: clip, side: THREE.DoubleSide, ...o });
+  const backs = new Map();
+  const cm = (c, o = {}) => {
+    const f = lam(c, { clippingPlanes: clip, ...o });
+    backs.set(f, lam(new THREE.Color(c).multiplyScalar(0.42).getHex(), { clippingPlanes: clip, side: THREE.BackSide }));
+    return f;
+  };
   const M = {
     annular: cm(C.annular), shearB: cm(C.shear), pipeB: cm(C.pipe), body: cm(C.steel),
-    conn: cm(C.conn), wh: cm(0x94a3b8), rubber: cm(C.rubber),
-    ck: lam(C.ck), valve: lam(0x0f766e), frame: lam(C.frame), base: lam(0x475569),
-    pipeBlk: lam(0x93c5fd), shearBlk: lam(0xfca5a5), blade: lam(0xf1f5f9), rod: lam(0x94a3b8),
-    podY: lam(0xfbbf24), podB: lam(0x2563eb), flex: cm(0x9ca3af),
+    conn: cm(C.conn), wh: cm(0x94a3b8), rubber: cm(0x353c48),
+    ck: lam(C.ck), valve: lam(0x0f766e), frame: lam(C.frame, { clippingPlanes: clip }), base: lam(0x475569),
+    pipeBlk: lam(0x7fb2ff), shearBlk: lam(0xff8a8a), blade: lam(0xf8fafc, { emissive: 0x334155 }), rod: lam(0x94a3b8),
+    podY: lam(0xfbbf24, { clippingPlanes: clip }), podB: lam(0x2563eb, { clippingPlanes: clip }), flex: cm(0x9ca3af),
+  };
+  const add = (parent, geo, mat, x = 0, y = 0, z = 0) => {
+    const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); parent.add(m);
+    const b = backs.get(mat);
+    if (b) { const mb = new THREE.Mesh(geo, b); m.add(mb); }
+    return m;
   };
   // guide base + wellhead housing
   add(g, box(7, 0.5, 7), M.base, 0, 0.25, 0);
@@ -191,7 +202,7 @@ function buildBOP(clip, withPipe) {
     .map(([r, y]) => new THREE.Vector2(r, y));
   add(g, new THREE.LatheGeometry(prof, 16), M.annular);
   const donutGeo = makeDonut();
-  const donut = add(g, donutGeo, M.rubber, 0, 10.6, 0); donut.frustumCulled = false;
+  const donut = add(g, donutGeo, M.rubber, 0, 10.6, 0); donut.frustumCulled = false; donut.children[0].frustumCulled = false;
   // flex joint + riser adapter
   add(g, new THREE.IcosahedronGeometry(0.85, 1), M.flex, 0, 12.6, 0);
   add(g, cyl(0.75, 1.2, 12), M.flex, 0, 13.0, 0);
@@ -227,7 +238,7 @@ function buildBOP(clip, withPipe) {
   const hiCol = { annular: C.annular, shear: C.shear, pipe: C.pipe, ck: C.ck, wh: C.conn };
   function set(st) {
     const a = st.ann || 0, p = st.pipe || 0, s = st.shear || 0;
-    updateDonut(donutGeo, lerp(1.38, 0.72, a), 0.40, 1.25 - 0.15 * a);
+    updateDonut(donutGeo, lerp(1.5, 0.87, a), 0.55, 1.1 - 0.12 * a);
     for (const r of pipeRams) r.grp.position.x = r.s * lerp(1.42, 0.0, p);
     for (const r of shearRams) r.grp.position.x = r.s * lerp(1.45, -0.5, s);
     for (const r of rods) {
@@ -238,7 +249,10 @@ function buildBOP(clip, withPipe) {
     for (const v of valves) v.wheel.rotation.z = (st.valve || 0) * Math.PI * 2 * v.side;
     for (const k in hiMats) {
       const h = (st.hi && st.hi[k]) || 0;
-      for (const m of hiMats[k]) m.emissive.setHex(hiCol[k]).multiplyScalar(h * 0.55);
+      for (const m of hiMats[k]) {
+        m.emissive.setHex(hiCol[k]).multiplyScalar(h * 0.55);
+        const b = backs.get(m); if (b) b.emissive.setHex(hiCol[k]).multiplyScalar(h * 0.35);
+      }
     }
     if (withPipe) {
       const cut = st.cut || 0;
@@ -325,25 +339,25 @@ const yFront = t => { const s = Math.max(0, t - 53); return SB + 12 + 6 * s + 6.
 
 // ---------------------------------------------------------------- camera
 const TITLE_DIVE = [
-  { t: 0, v: [-118, 40, 170, 0, 20, 0, 38] },
-  { t: 4.5, v: [-66, 27, 102, 0, 16, 0, 38], stop: true },
-  { t: 6.4, v: [-24, 9, 34, 0, 0, 0, 42] },
+  { t: 0, v: [-138, 70, 258, 0, 30, 0, 38] },
+  { t: 4.5, v: [-100, 52, 188, 0, 24, 0, 38], stop: true },
+  { t: 6.4, v: [-42, 5, 62, 0, -2, 0, 42] },
   { t: 7.5, v: [-12, -5, 18, 0, -18, 0, 45] },
   { t: 9.7, v: [-10, -58, 16, 0, -78, 0, 45] },
   { t: 11.7, v: [-14, -113, 25, 0, -128, 0, 42] },
 ];
 const ANAT = [ // az, el, dist, focusY, fov (relative to BOP)
-  { t: 13.0, v: [-40, 10, 36, 6.5, 40] },
-  { t: 14.5, v: [-26, 12, 21, 10.3, 40] },
-  { t: 17.0, v: [-16, 10, 20.5, 10.1, 40] },
-  { t: 17.9, v: [-10, 6, 20, 7.3, 40] },
-  { t: 20.3, v: [-3, 5, 19.5, 7.1, 40] },
-  { t: 21.2, v: [3, 5, 19.5, 5.3, 40] },
-  { t: 23.8, v: [9, 6, 19.5, 5.1, 40] },
-  { t: 24.7, v: [13, 15, 19, 3.9, 40] },
-  { t: 26.2, v: [18, 15, 19, 3.6, 40] },
-  { t: 27.0, v: [22, 14, 19, 2.6, 40] },
-  { t: 28.0, v: [27, 12, 21, 3.4, 40] },
+  { t: 13.0, v: [-40, 10, 38, 7.0, 40] },
+  { t: 14.5, v: [-26, 12, 25, 10.3, 40] },
+  { t: 17.0, v: [-16, 10, 24.5, 10.1, 40] },
+  { t: 17.9, v: [-10, 6, 24, 7.3, 40] },
+  { t: 20.3, v: [-3, 5, 23.5, 7.1, 40] },
+  { t: 21.2, v: [3, 5, 23.5, 5.3, 40] },
+  { t: 23.8, v: [9, 6, 23.5, 5.1, 40] },
+  { t: 24.7, v: [13, 16, 23, 4.0, 40] },
+  { t: 26.2, v: [18, 16, 23, 3.7, 40] },
+  { t: 27.0, v: [22, 15, 23, 2.8, 40] },
+  { t: 28.0, v: [27, 13, 25, 3.6, 40] },
 ];
 function sph(v, cy = SB) {
   const [az, el, d, fy, fov] = v;
@@ -357,32 +371,37 @@ const DIO = [ // local diorama coords
   { t: 35.4, v: [2, -43, 42, 0, -48, 0, 40] },
   { t: 38.0, v: [0, -52, 32, 0, -57, 0, 40] },
   { t: 40.8, v: [-1, -53, 29, 0, -58, 0, 40], stop: true },
-  { t: 42.3, v: [6, 19, 50, 0, 17, 0, 40], stop: true },
-  { t: 45.4, v: [3, 18, 46, 0, 16, 0, 40], stop: true },
+  { t: 42.3, v: [6, 21, 64, 0, 18, 0, 40], stop: true },
+  { t: 45.4, v: [3, 20, 60, 0, 17, 0, 40], stop: true },
   { t: 47.6, v: [0, -10, 158, 0, -14, 0, 40] },
   { t: 51.0, v: [0, -12, 146, 0, -15, 0, 40] },
   { t: 53.0, v: [0, -11, 136, 0, -14, 0, 40] },
 ];
-const SURF1 = [{ t: 57.0, v: [-100, 30, 128, 0, 34, 0, 40] }, { t: 60.2, v: [-78, 28, 100, 0, 34, 0, 40] }];
-const SHEAR = [{ t: 60.2, v: [-12, 6, 16, 7.0, 40] }, { t: 62.8, v: [4, 7, 15, 7.2, 40] }];
-const SURF2 = [{ t: 62.8, v: [-80, 28, 104, 0, 32, 0, 40] }, { t: 66.0, v: [-96, 34, 126, 0, 30, 0, 40] }];
+const SURF1 = [{ t: 57.0, v: [-128, 62, 176, 0, 31, 0, 40] }, { t: 60.2, v: [-108, 54, 150, 0, 31, 0, 40] }];
+const SHEAR = [{ t: 60.2, v: [-12, 6, 21, 7.0, 40] }, { t: 62.8, v: [4, 7, 19, 7.2, 40] }];
+const SURF2 = [{ t: 62.8, v: [-112, 54, 152, 0, 29, 0, 40] }, { t: 66.0, v: [-132, 62, 180, 0, 28, 0, 40] }];
 const HERO = [
   { t: 66.0, v: [38, 4, 31, 9.5, 40] },
   { t: 71.0, v: [18, 6, 28, 9.8, 40] },
   { t: 75.0, v: [2, 10, 25, 10.6, 40] },
 ];
 
+// shift camera+target down by k*dist so the subject sits above screen centre (clear of caption box)
+function lift(v, k = 0.05) {
+  const d = Math.hypot(v[0] - v[3], v[1] - v[4], v[2] - v[5]);
+  v[1] -= k * d; v[4] -= k * d; return v;
+}
 function camState(t) {
-  if (t < 13) return { set: 'A', v: track(TITLE_DIVE, t) };
-  if (t < 28) return { set: 'A', v: sph(track(ANAT, t)) };
-  if (t < 53) { const v = track(DIO, t); v[0] += DX; v[3] += DX; return { set: 'B', v }; }
+  if (t < 13) return { set: 'A', v: t > 11.7 ? lift(track(TITLE_DIVE, t), 0.05 * sstep(11.7, 13, t)) : track(TITLE_DIVE, t) };
+  if (t < 28) return { set: 'A', v: lift(sph(track(ANAT, t))) };
+  if (t < 53) { const v = lift(track(DIO, t)); v[0] += DX; v[3] += DX; return { set: 'B', v }; }
   if (t < 57) {
     const s = t - 53, yf = yFront(t - 0.35);
-    const az = (-30 + s * 8) * D2R, d = 9 + s * 0.6;
-    return { set: 'A', v: [d * Math.sin(az), yf - 1.5, d * Math.cos(az), 0, yf - 0.5, 0, 42] };
+    const az = (-30 + s * 8) * D2R, d = 13 + s * 0.5;
+    return { set: 'A', v: lift([d * Math.sin(az), yf - 1.0, d * Math.cos(az), 0, yf - 1.5, 0, 42], 0.06) };
   }
   if (t < 60.2) return { set: 'A', v: track(SURF1, t) };
-  if (t < 62.8) return { set: 'A', v: sph(track(SHEAR, t)) };
+  if (t < 62.8) return { set: 'A', v: lift(sph(track(SHEAR, t))) };
   if (t < 66) return { set: 'A', v: track(SURF2, t) };
   return { set: 'A', v: sph(track(HERO, t)) };
 }
@@ -438,15 +457,18 @@ async function init(opts) {
   O.rig = buildRig(); A.add(O.rig.group);
 
   // riser + buoyancy + aux lines
-  const riserMat = lam(0xd4d9e0, { clippingPlanes: [O.clipA], side: THREE.DoubleSide });
-  const buoyMat = lam(0xf2f4f7, { clippingPlanes: [O.clipA], side: THREE.DoubleSide });
+  const riserMat = lam(0xd4d9e0, { clippingPlanes: [O.clipA] });
+  const riserIn = lam(0x4a5866, { clippingPlanes: [O.clipA], side: THREE.BackSide });
+  const buoyMat = lam(0xf2f4f7, { clippingPlanes: [O.clipA] });
   const rTop = 12, rBot = SB + 13.4;
-  add(A, cyl(0.75, rTop - rBot, 12, true), riserMat, 0, (rTop + rBot) / 2, 0);
+  const pair = (geo, mf, mb) => { add(A, geo, mf); add(A, geo, mb); };
+  pair(cyl(0.75, rTop - rBot, 12, true).translate(0, (rTop + rBot) / 2, 0), riserMat, riserIn);
   const bg = [], rg = [];
   for (let y = -112; y < -14; y += 14) bg.push(cyl(1.3, 11, 12, true).translate(0, y, 0));
   for (let y = rBot + 6; y < rTop; y += 14) rg.push(cyl(0.95, 0.5, 12, true).translate(0, y, 0));
-  add(A, mergeGeometries(bg), buoyMat);
-  add(A, mergeGeometries(rg), riserMat);
+  pair(mergeGeometries(bg), buoyMat, riserIn);
+  pair(mergeGeometries(rg), riserMat, riserIn);
+  O.riserMud = add(A, cyl(0.7, rTop - rBot + 6, 12, true).translate(0, (rTop + rBot - 6) / 2, 0), lam(0x8a5a2e, { clippingPlanes: [O.clipA], side: THREE.BackSide }));
   const aux = lam(0x10b981);
   add(A, strip([cylBetween([1.45, rBot + 1, -0.7], [1.45, rTop, -0.7], 0.12, 5), cylBetween([-1.45, rBot + 1, -0.7], [-1.45, rTop, -0.7], 0.12, 5),
     cylBetween([2.77, SB + 13.9, -1.39], [1.45, rBot + 1, -0.7], 0.14, 5), cylBetween([-2.77, SB + 13.9, -1.39], [-1.45, rBot + 1, -0.7], 0.14, 5)]), aux);
@@ -490,7 +512,7 @@ async function init(opts) {
   O.rays = add(A, mergeGeometries(rays), rayMat);
 
   // marine snow
-  O.snow = new THREE.InstancedMesh(new THREE.TetrahedronGeometry(0.12), basic(0xe6fbff), 320);
+  O.snow = new THREE.InstancedMesh(new THREE.TetrahedronGeometry(0.08), basic(0xe6fbff), 320);
   O.snow.frustumCulled = false; A.add(O.snow);
   // fish
   const fishG = mergeGeometries([new THREE.ConeGeometry(0.5, 2.0, 5).rotateZ(-Math.PI / 2),
@@ -499,7 +521,7 @@ async function init(opts) {
   O.fish.frustumCulled = false; A.add(O.fish);
 
   // blowout gas bubbles (riser / BOP bore)
-  O.gasA = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), lam(C.gas, { emissive: 0x6b5a1e }), 260);
+  O.gasA = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshLambertMaterial({ color: 0xfffbea, emissive: 0x8a7a50 }), 260);
   O.gasA.frustumCulled = false; A.add(O.gasA);
   // eruption
   O.erMud = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), lam(0x7a4a24), 260);
@@ -537,6 +559,10 @@ async function init(opts) {
       if (R === RO) add(B, cyl(R, h, 16, true), cb(new THREE.Color(L.c).multiplyScalar(0.62).getHex()), 0, yc, 0);
     }
     add(B, mergeGeometries(geos), lam(L.c));
+    if (L.y1 < Y_SHOE) { // solid rock plug below the bit (hole not yet drilled)
+      const pg = box(2 * RO + 0.02, 1, RO + 0.2).translate(0, -0.5, -(RO + 0.2) / 2);
+      L.plug = add(B, pg, lam(L.c));
+    }
   }
   // texture pebbles on the cut face
   const peb = { light: [], dark: [], gas: [] };
@@ -611,7 +637,7 @@ async function init(opts) {
   O.mudP = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.2, 0), basic(0xffffff), NP * 2);
   O.mudP.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(NP * 2 * 3), 3);
   O.mudP.frustumCulled = false; B.add(O.mudP);
-  O.gasB = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), lam(C.gas, { emissive: 0x7a6420 }), 110);
+  O.gasB = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshLambertMaterial({ color: 0xfffbea, emissive: 0x8a7a48 }), 110);
   O.gasB.frustumCulled = false; B.add(O.gasB);
 
   O.m4 = new THREE.Matrix4(); O.col = new THREE.Color();
@@ -735,6 +761,7 @@ function applyA(t, v) {
     O.clipA.constant = cut <= 0 ? 1e4 : lerp(7, -0.02, cut);
   }
   O.bopA.set(bopAState(t));
+  O.riserMud.visible = (t >= 53 && t < 57) || (t >= 60.2 && t < 62.8);
   // marine snow around camera
   if (under) {
     const N = 320, S = 44;
@@ -743,7 +770,8 @@ function applyA(t, v) {
       const wx = ((px - v[0]) % S + S) % S - S / 2 + v[0];
       const wy = ((py - v[1]) % S + S) % S - S / 2 + v[1];
       const wz = ((pz - v[2]) % S + S) % S - S / 2 + v[2];
-      setI(O.snow, i, wx, wy, wz, 0.7 + hash(i, 54));
+      const dc = Math.hypot(wx - v[0], wy - v[1], wz - v[2]);
+      setI(O.snow, i, wx, wy, wz, dc < 9 ? 0 : 0.6 + hash(i, 54) * 0.8);
     }
     done(O.snow, N);
   } else done(O.snow, 0);
@@ -768,9 +796,9 @@ function applyA(t, v) {
       const y = yf - j * 0.55 - hash(j, 71) * 0.4;
       if (y < SB + 1.5) break;
       const frac = clamp((y - SB) / 140);
-      const r = 0.14 + 0.42 * frac * frac + hash(j, 72) * 0.08;
-      const th = hash(j, 73) * Math.PI * 2 + y * 0.2, rr = y < SB + 13 ? 0.62 : 0.52;
-      setI(O.gasA, ng++, Math.cos(th) * rr * (1 - frac * 0.5), y, Math.sin(th) * rr * (1 - frac * 0.5), r);
+      const r = 0.12 + 0.26 * frac + hash(j, 72) * 0.05;
+      const th = hash(j, 73) * Math.PI * 2 + y * 0.2, rr = y < SB + 13 ? 0.62 : 0.32 + 0.22 * (1 - frac);
+      setI(O.gasA, ng++, Math.cos(th) * rr, y, Math.sin(th) * rr, r);
     }
   } else if (t >= 60.2 && t < 62.8) {
     const yS = SB + O.bopA.yS;
@@ -808,7 +836,7 @@ function applyA(t, v) {
       if (hash(i, 88) > env(born)) continue;
       const ang = hash(i, 89) * 6.283, hv = 1 + hash(i, 90) * 4;
       const y = 19 + (40 + hash(i, 91) * 12) * age - 8 * age * age;
-      setI(O.erGas, ngs++, Math.cos(ang) * hv * age * 2, y, Math.sin(ang) * hv * age * 2, 1.0 + age * 3.2);
+      setI(O.erGas, ngs++, Math.cos(ang) * hv * age * 2, y, Math.sin(ang) * hv * age * 2, 0.6 + age * 1.6);
     }
     const fenv = tt => (tt >= 57.9 ? sstep(57.9, 58.5, tt) * (1 - sstep(63.2, 65.6, tt)) : 0);
     for (let i = 0; i < 120; i++) {
@@ -816,7 +844,7 @@ function applyA(t, v) {
       const fe = fenv(born); if (fe <= 0.02) continue;
       const ang = hash(i, 94) * 6.283 + age * 2, rr = (1 - age) * 3.5 * hash(i, 95) + 0.5;
       const y = 18.5 + age * (16 + 12 * fe) * (0.6 + hash(i, 96) * 0.6);
-      setI(O.fire, nf, Math.cos(ang) * rr, y, Math.sin(ang) * rr, (1 - age) * (1.6 + hash(i, 97) * 1.6) * (0.4 + 0.6 * fe));
+      setI(O.fire, nf, Math.cos(ang) * rr, y, Math.sin(ang) * rr, (1 - age * 0.8) * (2.0 + hash(i, 97) * 2.0) * (0.4 + 0.6 * fe));
       setC(O.fire, nf, age < 0.25 ? 0xfff3a0 : age < 0.55 ? 0xffb020 : 0xff5a1f);
       nf++;
     }
@@ -825,7 +853,7 @@ function applyA(t, v) {
       const life = 4, age = fract(t / life + hash(i, 98)), born = t - age * life;
       if (hash(i, 99) > senv(born)) continue;
       const y = 34 + age * 70, x = age * 40 * (0.6 + hash(i, 100)) + (hash(i, 101) - 0.5) * 6, z = (hash(i, 102) - 0.5) * 12 - age * 10;
-      setI(O.smoke, ns++, x, y, z, 2.5 + age * 9);
+      setI(O.smoke, ns++, x, y + 8, z, 2 + age * 6.5);
     }
   }
   done(O.erMud, nm); done(O.erGas, ngs); done(O.fire, nf); done(O.smoke, ns);
@@ -842,6 +870,10 @@ function applyB(t, v) {
   O.fireLight.intensity = 0;
   const yb = yBit(t);
   O.ds.position.y = yb;
+  for (const L of O.layers) if (L.plug) {
+    const top = Math.min(L.y0, yb - 0.1);
+    L.plug.visible = top > L.y1; L.plug.position.y = top; L.plug.scale.y = Math.max(0.01, top - L.y1);
+  }
   O.dsRot.rotation.y = pwlIntegral(RATE_ROT, t);
   O.bit.rotation.y = O.dsRot.rotation.y;
   // BOP state in diorama
@@ -852,13 +884,13 @@ function applyB(t, v) {
   const D = pwlIntegral(RATE_D, t), Dk = pwlIntegral(RATE_D, T_KILL), kf = t >= T_KILL ? D - Dk : -1;
   const yPB = yb + 2.6;
   O.pipeFluid.position.y = yPB; O.pipeFluid.scale.y = 100 - yPB;
-  O.annFluid.position.y = yb; O.annFluid.scale.y = Y_RISER - yb;
+  O.annFluid.position.y = yb; O.annFluid.scale.y = -0.5 - yb;
   const LA = Y_INJ - yPB, LB = 4;
   if (kf > 0) {
     const yk = Math.max(yPB, Y_INJ - kf);
     O.pipeKill.visible = true; O.pipeKill.position.y = yk; O.pipeKill.scale.y = 100 - yk;
     const ha = kf - LA - LB;
-    if (ha > 0) { O.annKill.visible = true; O.annKill.position.y = yb; O.annKill.scale.y = Math.min(ha, yChoke - yb); }
+    if (ha > 0) { O.annKill.visible = true; O.annKill.position.y = yb; O.annKill.scale.y = Math.min(ha, -0.6 - yb); }
     else O.annKill.visible = false;
   } else { O.pipeKill.visible = false; O.annKill.visible = false; }
   // mud particles
@@ -880,7 +912,7 @@ function applyB(t, v) {
       const s = ((hash(i, 40) * Ls + Dsw) % Ls + Ls) % Ls;
       if (s < (Y_INJ - ybs - 2.6) + LB) continue;
       if (!mudPath(s, i, ybs, false, pp)) continue;
-      if (pp[1] < yChoke) continue;
+      if (pp[1] < Y_RISER + 0.5) continue;
       setI(O.mudP, n, pp[0], pp[1], pp[2], 1);
       setC(O.mudP, n, hash(i, 46) < 0.18 ? 0x5b4a3a : C.mudP);
       n++;
@@ -912,8 +944,8 @@ function applyB(t, v) {
           }
         }
       }
-      r = 0.32 + 0.4 * clamp((y - ye) / 70) + hash(j, 115) * 0.12;
-      if (y >= yChoke && t >= T_SW) r = Math.min(r, 0.42);
+      r = 0.24 + 0.3 * clamp((y - ye) / 70) + hash(j, 115) * 0.08;
+      if (y >= yChoke && t >= T_SW) r = Math.min(r, 0.4);
       setI(O.gasB, ng++, x, y, z, r);
     }
   }
@@ -971,6 +1003,7 @@ function callout(ctx, t, t0, t1, anchor, local, px, py, en, th, color, size = 34
   if (a <= 0) return;
   const P = proj(anchor, local);
   if (!P.ok) return;
+  if (px === null) { px = clamp(P.x + py[0], 200, 820); py = clamp(P.y + py[1], 290, 1250); }
   const k = eout((t - t0) / 0.45);
   const b = pillBounds(ctx, px, py, en, th, size, align);
   // leader from nearest pill edge point
@@ -1110,14 +1143,14 @@ function pressureGauge(ctx, t, a) {
   const pm = lerp(0.62, 0.84, sstep(48.6, 51.4, t));
   const pf = lerp(0.47, 0.76, sstep(38.7, 39.4, t));
   const safe = pm > pf;
-  const x = 708, y = 800, w = 248, h = 440;
+  const x = 712, y = 640, w = 244, h = 400;
   ctx.save(); ctx.globalAlpha = a;
   ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 20;
   ctx.fillStyle = 'rgba(10,18,36,0.80)'; rr(ctx, x, y, w, h, 26); ctx.fill(); ctx.shadowColor = 'transparent';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#fff'; ctx.font = F(600, 28); ctx.fillText('แรงดัน', x + w / 2, y + 34);
   ctx.font = F(400, 20); ctx.fillStyle = 'rgba(200,215,240,0.85)'; ctx.fillText('PRESSURE', x + w / 2, y + 62);
-  const bh = 230, by = y + 90;
+  const bh = 196, by = y + 88;
   const bars = [[pm, safe ? '#60a5fa' : '#60a5fa', 'โคลน', 'Mud', x + 70], [pf, '#f87171', 'ชั้นหิน', 'Rock', x + w - 70]];
   for (const [val, col, th, en, bx] of bars) {
     ctx.fillStyle = 'rgba(255,255,255,0.12)'; rr(ctx, bx - 26, by, 52, bh, 12); ctx.fill();
@@ -1137,14 +1170,14 @@ function pressureGauge(ctx, t, a) {
 function pitGauge(ctx, t, a) {
   if (a <= 0) return;
   const gain = sstep(39.3, 42.4, t) * (1 - 0.85 * sstep(47.5, 51.5, t));
-  const x = 66, y = 860, w = 236, h = 380;
+  const x = 66, y = 660, w = 232, h = 340;
   ctx.save(); ctx.globalAlpha = a;
   ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 20;
   ctx.fillStyle = 'rgba(10,18,36,0.80)'; rr(ctx, x, y, w, h, 26); ctx.fill(); ctx.shadowColor = 'transparent';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#fff'; ctx.font = F(600, 28); ctx.fillText('ระดับบ่อโคลน', x + w / 2, y + 34);
   ctx.font = F(400, 20); ctx.fillStyle = 'rgba(200,215,240,0.85)'; ctx.fillText('PIT VOLUME', x + w / 2, y + 62);
-  const tx = x + 48, ty = y + 92, tw = w - 96, th = 190;
+  const tx = x + 48, ty = y + 88, tw = w - 96, th = 160;
   ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 4; rr(ctx, tx, ty, tw, th, 14); ctx.stroke();
   const lvl = 0.45 + 0.4 * gain, lh = (th - 8) * lvl;
   ctx.save(); rr(ctx, tx + 4, ty + 4, tw - 8, th - 8, 10); ctx.clip();
@@ -1250,7 +1283,7 @@ function drawOverlay(ctx, t) {
   }
   // ---- DIVE
   if (t >= 5 && t < 13.5) {
-    callout(ctx, t, 5.4, 8.6, [0, 4, 0], null, 330, 560, 'Drilling Rig', 'แท่นขุดเจาะ', '#f97316', 32);
+    callout(ctx, t, 5.2, 6.2, [0, 30, 0], null, 330, 420, 'Drilling Rig', 'แท่นขุดเจาะ', '#f97316', 32);
     callout(ctx, t, 8.4, 11.4, [0, camera.position.y - 14, 0], null, 640, 470, 'Riser', 'ท่อไรเซอร์', '#94a3b8', 34);
     callout(ctx, t, 11.0, 13.4, [0, SB + 12.5, 0], null, 560, 380, 'BOP Stack', 'บนปากหลุมเจาะ', '#f59e0b', 36);
     depthMeter(ctx, t);
@@ -1287,16 +1320,17 @@ function drawOverlay(ctx, t) {
     callout(ctx, t, 30.2, 32.0, [-2.25, -18, 0.2], O.B, 260, 900, 'Casing', 'ท่อกรุ', '#94a3b8', 30);
     callout(ctx, t, 32.6, 37.8, [0, yb + 0.6, 1.4], O.B, 300, 1180, 'Drill Bit', 'หัวเจาะ', '#fbbf24', 30);
     callout(ctx, t, 33.2, 37.8, [1.7, yb + 9, 0.4], O.B, 300, 400, 'Annulus ↑', 'โคลนไหลกลับขึ้น', HEX.mud, 30);
-    pressureGauge(ctx, t, win(t, 33.6, 99, 0.4, 0.1));
+  }
+  if (t >= 33 && t < 53.3) {
+    pressureGauge(ctx, t, win(t, 33.6, 42.5, 0.4, 0.3) + win(t, 45.6, 53.1, 0.4, 0.2));
+    pitGauge(ctx, t, win(t, 39.2, 42.5, 0.4, 0.3) + win(t, 45.6, 53.1, 0.4, 0.2));
   }
   // ---- KICK
   if (t >= 38 && t < 53.3) {
-    chapter(ctx, t, 38.0, 53.0, '03', 'Kick & การควบคุมหลุม', 'WELL CONTROL');
+    chapter(ctx, t, 38.0, 53.0, '03', 'Kick!', 'WELL CONTROL');
     const yb = yBit(t);
-    pressureGauge(ctx, t, win(t, 37.9, 47.0, 0.01, 0.4) + win(t, 50.6, 53.1, 0.4, 0.2));
-    pitGauge(ctx, t, win(t, 39.2, 47.0, 0.4, 0.4) + win(t, 50.6, 53.1, 0.4, 0.2));
-    callout(ctx, t, 38.4, 41.0, [-6, -63.5, 0.1], O.B, 340, 400, 'High-pressure gas', 'ชั้นก๊าซ', '#e07a3f', 30);
-    callout(ctx, t, 39.4, 41.0, [1.8, -55, 0.5], O.B, 720, 640, 'Gas influx', 'ก๊าซไหลเข้า', '#eab308', 30);
+    callout(ctx, t, 38.4, 41.0, [-5, -62, 0.1], O.B, 330, 1180, 'High-pressure gas', 'ชั้นก๊าซ', '#e07a3f', 30);
+    callout(ctx, t, 39.4, 41.0, [1.7, -56, 0.5], O.B, 700, 420, 'Gas influx', 'ก๊าซไหลเข้า', '#eab308', 30);
     alarm(ctx, t, 40.2, 42.4, 'KICK!', 'ก๊าซแรงดันสูงไหลเข้าหลุม');
     const an = O.bopB.anchors;
     callout(ctx, t, 42.8, 45.4, an.annular, BB, 300, 360, 'Annular', 'ปิดแล้ว ✓', HEX.annular, 32);
@@ -1305,7 +1339,7 @@ function drawOverlay(ctx, t) {
     if (t >= 46.2) {
       const D = pwlIntegral(RATE_D, t), kf = D - pwlIntegral(RATE_D, T_KILL);
       const yk = Math.max(yb + 2.6, Y_INJ - kf);
-      callout(ctx, t, 46.4, 50.6, [0, yk, 0.6], O.B, 330, 1060, 'Kill Mud ↓', 'โคลนหนัก', HEX.kill, 32);
+      callout(ctx, t, 46.4, 50.6, [0, yk, 0.6], O.B, null, [-250, 0], 'Kill Mud ↓', 'โคลนหนัก', HEX.kill, 32);
       callout(ctx, t, 47.0, 50.6, [6.9, 30, -3], O.B, 700, 300, 'Gas out', 'ก๊าซออกทาง Choke', HEX.ck, 30);
     }
     badge(ctx, t, 51.4, 53.0, 510, 470, 'WELL UNDER CONTROL', 'ควบคุมหลุมได้แล้ว', '#16a34a', 56);
@@ -1313,7 +1347,8 @@ function drawOverlay(ctx, t) {
   // ---- BLOWOUT
   if (t >= 53 && t < 66.3) {
     chapter(ctx, t, 53.0, 66.0, '04', 'ถ้าควบคุมไม่ได้...', 'BLOWOUT');
-    if (t < 57) callout(ctx, t, 54.2, 56.8, [0.5, yFront(t) - 1.5, 0.3], null, 320, 1080, 'Gas expands', 'ก๊าซขยายตัว', '#eab308', 32);
+    if (t < 57) callout(ctx, t, 54.2, 56.8, [0.3, camera.position.y - 1, 0.3], null, 300, 1120, 'Gas expands', 'ก๊าซขยายตัว', '#eab308', 32);
+    if (t < 57) callout(ctx, t, 53.6, 56.8, [-0.75, camera.position.y + 3, 0], null, 700, 380, 'Riser', 'ท่อไรเซอร์', '#94a3b8', 30);
     if (t >= 57 && t < 60.2) alarm(ctx, t, 57.35, 60.15, 'BLOWOUT!', 'โคลน + ก๊าซพุ่งขึ้นแท่น');
     if (t >= 60.2 && t < 62.8) {
       callout(ctx, t, 60.35, 62.8, O.bopA.anchors.shear, BA, 330, 380, 'Blind Shear Ram', 'ทางสุดท้าย', HEX.shear, 34);
