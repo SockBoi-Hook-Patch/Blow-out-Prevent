@@ -6,7 +6,7 @@
 ## ตอนต่าง ๆ
 | ตอน | โฟลเดอร์ | วิดีโอ |
 |---|---|---|
-| Subsea BOP (3D) | `bop-3d/` | `video/BOP_3D_pilot.mp4` |
+| Subsea BOP (3D) | `bop-3d/` | `video/namman_subsea_BOP.mp4` |
 | BOP (8-bit, ต้นแบบแรก) | `audio.js`, `scenes.js`, `render/` | `video/BOP_8bit_loop.mp4` |
 
 ## Render ตอน 3D
