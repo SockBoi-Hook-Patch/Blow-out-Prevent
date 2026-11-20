@@ -1,7 +1,7 @@
 # BOP 8-bit Animation — Spec / Contract
 
-Single static web page, no build step. Files:
-- `index.html` — shell: canvas, start overlay, caption bar, timeline loop (owner: integrator)
+Deliverable: looping MP4 video, 1080x1920 (9:16), 30 fps, 60 s. Rendered by `node render/render.js` (Playwright + ffmpeg). Files:
+- `render/frame.html`, `render/render.js` — frame compositor (6x scale, burned-in captions, "Sockboi" credit) and encoder (owner: integrator)
 - `audio.js`  — 8-bit chiptune + SFX via WebAudio (owner: audio agent)
 - `scenes.js` — pixel-art scenes drawn on canvas (owner: visuals agent)
 

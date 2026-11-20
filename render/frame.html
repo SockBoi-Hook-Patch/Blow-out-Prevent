@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Kanit:wght@500;600&display=block" rel="stylesheet">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+</head>
+<body>
+<canvas id="out" width="1080" height="1920"></canvas>
+<script src="../audio.js"></script>
+<script src="../scenes.js"></script>
+<script>
+// Composites one video frame: 180x320 pixel-art scene scaled 6x + burned-in caption box + credit.
+const S = 6, W = 180, H = 320;
+const px = document.createElement('canvas'); px.width = W; px.height = H;
+const pctx = px.getContext('2d'); pctx.imageSmoothingEnabled = false;
+const out = document.getElementById('out');
+const o = out.getContext('2d'); o.imageSmoothingEnabled = false;
+const caps = (window.BOPScenes && BOPScenes.captions) || [];
+const seg = new Intl.Segmenter('th', { granularity: 'word' });
+
+function wrap(text, maxW) {
+  const words = [...seg.segment(text)].map(s => s.segment);
+  const lines = []; let cur = '';
+  for (const w of words) {
+    const test = cur + w;
+    if (o.measureText(test).width > maxW && cur.trim()) { lines.push(cur.trim()); cur = w.trimStart(); }
+    else cur = test;
+  }
+  if (cur.trim()) lines.push(cur.trim());
+  return lines;
+}
+
+// caption box in pixel-canvas coords: x 7..173, y 245..307 (=> 42..1038, 1470..1842 px)
+const BOX = { x: 7 * S, y: 245 * S, w: 166 * S, h: 62 * S };
+const capCache = new Map();
+function drawCaption(t) {
+  const c = caps.find(c => t >= c.t0 && t < c.t1);
+  if (!c) return;
+  // 8-bit style box: black outline, dark fill, light inner border
+  o.fillStyle = '#000'; o.fillRect(BOX.x - S, BOX.y - S, BOX.w + 2 * S, BOX.h + 2 * S);
+  o.fillStyle = '#f4f4f4'; o.fillRect(BOX.x, BOX.y, BOX.w, BOX.h);
+  o.fillStyle = '#1d1d3a'; o.fillRect(BOX.x + S, BOX.y + S, BOX.w - 2 * S, BOX.h - 2 * S);
+  // pop-in: box slides up during first 0.15s of each caption
+  const pad = 30, maxW = BOX.w - pad * 2;
+  let size = 56, lines;
+  for (;;) {
+    o.font = `600 ${size}px Kanit, Loma, sans-serif`;
+    lines = wrap(c.th, maxW);
+    if ((lines.length <= 2 && lines.every(l => o.measureText(l).width <= maxW)) || size <= 34) break;
+    size -= 2;
+  }
+  const lh = Math.round(size * 1.35);
+  const enSize = 20, enGap = c.en ? 26 + enSize : 0;
+  const total = lines.length * lh + enGap;
+  let y = BOX.y + (BOX.h - total) / 2 + size * 0.95;
+  // typewriter reveal for Thai line (by grapheme), 0.6s
+  const shown = Math.min(1, (t - c.t0) / 0.6);
+  const full = lines.join('\u0000');
+  const graphemes = [...new Intl.Segmenter('th', { granularity: 'grapheme' }).segment(full)].map(s => s.segment);
+  let n = Math.ceil(graphemes.length * shown), k = 0;
+  o.textBaseline = 'alphabetic'; o.textAlign = 'center';
+  for (const line of lines) {
+    const g = [...new Intl.Segmenter('th', { granularity: 'grapheme' }).segment(line)].map(s => s.segment);
+    const vis = g.slice(0, Math.max(0, n - k)).join('');
+    k += g.length + 1;
+    // measure full line so text doesn't shift while typing
+    const fullW = o.measureText(line).width;
+    o.textAlign = 'left';
+    const x0 = BOX.x + (BOX.w - fullW) / 2;
+    o.fillStyle = '#000'; o.fillText(vis, x0 + 4, y + 4);
+    o.fillStyle = '#ffffff'; o.fillText(vis, x0, y);
+    y += lh;
+  }
+  if (c.en) {
+    o.font = `${enSize}px "Press Start 2P", monospace`; o.textAlign = 'center';
+    o.fillStyle = '#9a9ac0'; o.fillText(c.en.toUpperCase(), BOX.x + BOX.w / 2, y - lh + 26 + enSize);
+  }
+  // blinking "next" arrow (classic RPG dialog)
+  if (shown >= 1 && Math.floor(t * 2.5) % 2 === 0) {
+    o.fillStyle = '#ffcc00';
+    const ax = BOX.x + BOX.w - 7 * S, ay = BOX.y + BOX.h - 6 * S;
+    o.fillRect(ax, ay, 4 * S, S); o.fillRect(ax + S, ay + S, 2 * S, S);
+  }
+}
+
+function drawCredit() {
+  o.font = '26px "Press Start 2P", monospace';
+  o.textAlign = 'right'; o.textBaseline = 'alphabetic';
+  const x = 1080 - 30, y = 1920 - 26;
+  o.fillStyle = '#000'; o.fillText('Sockboi', x + 4, y + 4);
+  o.fillStyle = '#ffcc00'; o.fillText('Sockboi', x, y);
+}
+
+window.renderFrame = function (t, type) {
+  pctx.setTransform(1, 0, 0, 1, 0, 0);
+  pctx.fillStyle = '#000'; pctx.fillRect(0, 0, W, H);
+  BOPScenes.draw(pctx, t);
+  o.drawImage(px, 0, 0, W * S, H * S);
+  // subtle CRT scanlines
+  o.fillStyle = 'rgba(0,0,0,0.12)';
+  for (let y = S - 2; y < 1920; y += S) o.fillRect(0, y, 1080, 2);
+  drawCaption(t);
+  drawCredit();
+  return out.toDataURL(type || 'image/png').split(',')[1];
+};
+
+window.renderAudio = async function () {
+  const bytes = await ChipMusic.renderWav(BOPScenes.cues || []);
+  let s = ''; const CH = 0x8000;
+  for (let i = 0; i < bytes.length; i += CH) s += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+  return btoa(s);
+};
+
+window.ready = document.fonts.load('600 40px Kanit').then(() => document.fonts.load('20px "Press Start 2P"')).then(() => true, () => true);
+</script>
+</body>
+</html>
