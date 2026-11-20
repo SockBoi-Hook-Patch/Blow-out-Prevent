@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <defs>
+    <radialGradient id="bg" cx="540" cy="440" r="760" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16808a"/>
+      <stop offset="0.45" stop-color="#0d4f68"/>
+      <stop offset="1" stop-color="#071a33"/>
+    </radialGradient>
+    <linearGradient id="hat" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.6" stop-color="#eef2f5"/>
+      <stop offset="1" stop-color="#c9d3dc"/>
+    </linearGradient>
+    <linearGradient id="brim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f7f9"/>
+      <stop offset="1" stop-color="#bfcad4"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0c193"/>
+      <stop offset="1" stop-color="#e2a676"/>
+    </linearGradient>
+    <linearGradient id="suit" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e8650f"/>
+      <stop offset="0.35" stop-color="#ff8a1f"/>
+      <stop offset="0.65" stop-color="#ff8a1f"/>
+      <stop offset="1" stop-color="#d9590a"/>
+    </linearGradient>
+    <linearGradient id="stripe" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef3f6"/>
+      <stop offset="0.5" stop-color="#b8c4cc"/>
+      <stop offset="1" stop-color="#dfe6ea"/>
+    </linearGradient>
+    <clipPath id="torsoClip">
+      <path d="M120 1100 C128 900 178 792 318 748 L468 694 L612 694 L762 748 C902 792 952 900 960 1100 Z"/>
+    </clipPath>
+    <linearGradient id="brimShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9c5228" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#9c5228" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="sleeve" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffa646"/>
+      <stop offset="1" stop-color="#f27a1a"/>
+    </linearGradient>
+    <clipPath id="headClip"><path d="M384 420 C380 560 440 652 540 656 C640 652 700 560 696 420 C696 340 640 300 540 300 C440 300 384 340 384 420 Z"/></clipPath>
+  </defs>
+
+  <!-- background -->
+  <rect width="1080" height="1080" fill="url(#bg)"/>
+  <g fill="#ffffff">
+    <polygon points="0,0 300,0 120,260" opacity="0.04"/>
+    <polygon points="300,0 620,0 420,140" opacity="0.025"/>
+    <polygon points="620,0 1080,0 900,220" opacity="0.04"/>
+    <polygon points="1080,0 1080,380 900,220" opacity="0.02"/>
+    <polygon points="0,260 120,260 0,560" opacity="0.025"/>
+    <polygon points="900,220 1080,380 980,560" opacity="0.035"/>
+  </g>
+  <!-- halo -->
+  <circle cx="540" cy="470" r="340" fill="#22a3a6" opacity="0.18"/>
+  <circle cx="540" cy="470" r="300" fill="#22a3a6" opacity="0.12"/>
+
+  <!-- rig silhouette left -->
+  <g fill="#082a44" opacity="0.85">
+    <path d="M150 380 L200 380 L240 760 L110 760 Z M160 400 L150 400 L118 740 L232 740 L200 400 Z" fill-rule="evenodd"/>
+    <rect x="90" y="740" width="200" height="22"/>
+    <rect x="160" y="350" width="30" height="34"/>
+  </g>
+  <g stroke="#082a44" stroke-width="5" opacity="0.85">
+    <line x1="152" y1="440" x2="208" y2="500"/><line x1="198" y1="440" x2="146" y2="510"/>
+    <line x1="142" y1="520" x2="216" y2="600"/><line x1="212" y1="520" x2="136" y2="610"/>
+    <line x1="132" y1="620" x2="226" y2="720"/><line x1="222" y1="620" x2="124" y2="720"/>
+  </g>
+  <!-- distant platform right -->
+  <g fill="#082a44" opacity="0.55">
+    <rect x="850" y="690" width="170" height="20"/>
+    <rect x="862" y="660" width="70" height="30"/>
+    <path d="M950 690 L968 520 L986 520 L1004 690 Z M958 690 L974 540 L980 540 L996 690 Z" fill-rule="evenodd"/>
+    <rect x="870" y="710" width="12" height="90"/><rect x="935" y="710" width="12" height="90"/><rect x="990" y="710" width="12" height="90"/>
+    <rect x="966" y="500" width="22" height="22"/>
+  </g>
+  <g stroke="#082a44" stroke-width="4" opacity="0.55">
+    <line x1="962" y1="600" x2="996" y2="650"/><line x1="992" y1="600" x2="958" y2="650"/>
+    <line x1="876" y1="730" x2="941" y2="790"/><line x1="941" y1="730" x2="876" y2="790"/>
+  </g>
+  <!-- sea line -->
+  <path d="M0 800 Q60 785 120 800 T240 800 T360 800 T480 800 T600 800 T720 800 T840 800 T960 800 T1080 800 V1080 H0 Z" fill="#0a2a46" opacity="0.6"/>
+
+  <!-- ==== CHARACTER ==== -->
+  <g transform="translate(0 28) translate(540 640) scale(1.12) translate(-540 -640)">
+  <g stroke="#1b2433" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+    <g transform="translate(0 -18)">
+    <!-- torso -->
+    <path d="M120 1100 C128 900 178 792 318 748 L468 694 L612 694 L762 748 C902 792 952 900 960 1100 Z" fill="url(#suit)"/>
+    <g clip-path="url(#torsoClip)" stroke="none">
+      <!-- chest stripe -->
+      <rect x="100" y="850" width="900" height="44" fill="url(#stripe)"/>
+      <!-- arm stripes -->
+      <rect x="100" y="960" width="160" height="40" fill="url(#stripe)"/>
+      <rect x="822" y="960" width="160" height="40" fill="url(#stripe)"/>
+    </g>
+    <!-- stripe outlines -->
+    <g fill="none" stroke-width="5" clip-path="url(#torsoClip)">
+      <line x1="100" y1="850" x2="1000" y2="850"/><line x1="100" y1="894" x2="1000" y2="894"/>
+      <line x1="100" y1="960" x2="257" y2="960"/><line x1="100" y1="1000" x2="254" y2="1000"/>
+      <line x1="823" y1="960" x2="980" y2="960"/><line x1="826" y1="1000" x2="980" y2="1000"/>
+    </g>
+    <!-- arm seams -->
+    <path d="M275 800 C260 880 256 980 250 1100" fill="none" stroke-width="6"/>
+    <path d="M805 800 C820 880 824 980 830 1100" fill="none" stroke-width="6"/>
+    <!-- neck -->
+    <path d="M484 600 L484 708 Q540 738 596 708 L596 600 Z" fill="#d79a6a"/>
+    <!-- undershirt V -->
+    <path d="M458 698 L540 796 L622 698 Q540 734 458 698 Z" fill="#0e5f6e"/>
+    <!-- collar flaps -->
+    <path d="M468 690 L540 796 L416 804 L382 722 Z" fill="#ff8a1f"/>
+    <path d="M612 690 L540 796 L664 804 L698 722 Z" fill="#f07818"/>
+    <!-- zipper -->
+    <line x1="540" y1="800" x2="540" y2="1090" stroke-width="6"/>
+    <rect x="530" y="812" width="20" height="34" rx="5" fill="#c9d3da" stroke-width="5"/>
+    <!-- pocket (viewer left) with name patch -->
+    <path d="M362 912 H492 V1004 Q427 1018 362 1004 Z" fill="#f07818" stroke-width="5"/>
+    <path d="M360 912 H494 V944 H360 Z" fill="#e3670f" stroke-width="5"/>
+    <rect x="385" y="958" width="84" height="30" rx="7" fill="#ffffff" stroke-width="4"/>
+    <circle cx="400" cy="973" r="7" fill="#11808a" stroke="none"/>
+    <line x1="414" y1="973" x2="456" y2="973" stroke="#9aa6b0" stroke-width="5"/>
+    <!-- thumbs-up arm (viewer right) -->
+    <path d="M676 960 C662 1010 650 1060 640 1110 L700 1110 Z" fill="#000" opacity="0.16" stroke="none"/>
+    <path d="M690 944 L776 930 C784 990 798 1050 812 1110 L676 1110 C680 1050 686 990 690 944 Z" fill="url(#sleeve)"/>
+    <clipPath id="sleeveClip"><path d="M690 944 L776 930 C784 990 798 1050 812 1110 L676 1110 C680 1050 686 990 690 944 Z"/></clipPath>
+    <g clip-path="url(#sleeveClip)" stroke="none"><rect x="660" y="1010" width="170" height="40" fill="url(#stripe)"/></g>
+    <path d="M684 1012 L790 1006 M682 1052 L796 1046" fill="none" stroke-width="5"/>
+    <path d="M690 944 L776 930 C784 990 798 1050 812 1110 L676 1110 C680 1050 686 990 690 944 Z" fill="none"/>
+    <path d="M684 932 Q730 946 778 924 L782 950 Q732 972 690 958 Z" fill="#d9590a" stroke-width="5"/>
+    <!-- hand -->
+    <path d="M676 830 C672 800 684 778 700 780 C716 782 716 806 712 836 L760 836 C780 836 784 856 772 866 C788 872 786 894 770 898 C784 906 780 926 764 928 L708 932 C686 932 668 916 668 890 L668 852 C668 842 672 834 676 830 Z" fill="url(#skin)"/>
+    <path d="M714 866 H772 M716 898 H770" fill="none" stroke-width="5"/>
+    <path d="M700 836 Q706 850 714 852" fill="none" stroke-width="5"/>
+    </g>
+    <!-- ears -->
+    <ellipse cx="382" cy="500" rx="30" ry="42" fill="#e6a777"/>
+    <ellipse cx="698" cy="500" rx="30" ry="42" fill="#e6a777"/>
+    <!-- head -->
+    <path d="M384 420 C380 560 440 652 540 656 C640 652 700 560 696 420 C696 340 640 300 540 300 C440 300 384 340 384 420 Z" fill="url(#skin)"/>
+  </g>
+
+  <!-- face details -->
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <!-- ear inner -->
+    <path d="M378 485 Q370 500 382 518" fill="none" stroke="#b87a4c" stroke-width="6"/>
+    <path d="M702 485 Q710 500 698 518" fill="none" stroke="#b87a4c" stroke-width="6"/>
+    <!-- brim shadow -->
+    <path d="M370 420 C450 470 630 470 710 420 L710 478 C630 500 450 500 370 478 Z" fill="url(#brimShade)" clip-path="url(#headClip)"/>
+    <!-- hair sideburns + fringe -->
+    <path d="M388 400 L692 400 L692 470 Q684 440 662 432 Q630 452 598 430 Q566 452 534 432 Q500 454 468 430 Q438 450 412 432 Q392 446 388 470 Z" fill="#2a1d1a" stroke="#1b2433" stroke-width="7"/>
+    <path d="M388 424 L424 424 Q414 458 408 498 Q394 486 388 468 Z" fill="#2a1d1a" stroke="#1b2433" stroke-width="6"/>
+    <path d="M692 424 L656 424 Q666 458 672 498 Q686 486 692 468 Z" fill="#2a1d1a" stroke="#1b2433" stroke-width="6"/>
+    <!-- cheeks -->
+    <ellipse cx="448" cy="568" rx="34" ry="20" fill="#f08a7a" opacity="0.45"/>
+    <ellipse cx="632" cy="568" rx="34" ry="20" fill="#f08a7a" opacity="0.45"/>
+    <!-- brows -->
+    <path d="M448 468 Q478 452 506 466" fill="none" stroke="#2a1d1a" stroke-width="11"/>
+    <path d="M574 466 Q602 452 632 468" fill="none" stroke="#2a1d1a" stroke-width="11"/>
+    <!-- eyes -->
+    <ellipse cx="478" cy="510" rx="21" ry="28" fill="#1b2433"/>
+    <ellipse cx="602" cy="510" rx="21" ry="28" fill="#1b2433"/>
+    <circle cx="485" cy="500" r="7" fill="#fff"/>
+    <circle cx="609" cy="500" r="7" fill="#fff"/>
+    <circle cx="472" cy="520" r="3" fill="#fff" opacity="0.8"/>
+    <circle cx="596" cy="520" r="3" fill="#fff" opacity="0.8"/>
+    <!-- nose -->
+    <path d="M530 555 Q540 564 550 555" fill="none" stroke="#b87a4c" stroke-width="6"/>
+    <!-- mouth -->
+    <path d="M488 584 Q540 594 592 584 Q588 640 540 642 Q492 640 488 584 Z" fill="#7a1f2b" stroke="#1b2433" stroke-width="6"/>
+    <path d="M495 588 Q540 597 585 588 L583 602 Q540 610 497 602 Z" fill="#fff"/>
+    <path d="M510 628 Q540 610 570 628 Q556 640 540 640 Q524 640 510 628 Z" fill="#e8636a"/>
+  </g>
+
+  <!-- hard hat -->
+  <g stroke="#1b2433" stroke-width="7" stroke-linejoin="round">
+    <path d="M352 400 C352 262 440 176 540 176 C640 176 728 262 728 400 Z" fill="url(#hat)"/>
+    <!-- side ribs -->
+    <path d="M448 222 C420 270 408 330 408 395" fill="none" stroke="#c3ced8" stroke-width="6"/>
+    <path d="M632 222 C660 270 672 330 672 395" fill="none" stroke="#c3ced8" stroke-width="6"/>
+    <!-- ridge -->
+    <path d="M524 178 Q540 172 556 178 L566 398 L514 398 Z" fill="#e4eaef"/>
+    <path d="M531 182 L527 396" stroke="#ffffff" stroke-width="6" fill="none"/>
+    <!-- brim -->
+    <path d="M318 396 C400 374 680 374 762 396 C774 408 770 424 752 428 C690 444 600 462 540 462 C480 462 390 444 328 428 C310 424 306 408 318 396 Z" fill="url(#brim)"/>
+    <!-- highlight -->
+    <path d="M396 330 C400 270 440 228 488 212" fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+    <!-- oil drop sticker -->
+    <circle cx="628" cy="318" r="34" fill="#0f6f7a" stroke-width="5"/>
+    <path d="M628 294 C640 312 648 322 648 332 A20 20 0 0 1 608 332 C608 322 616 312 628 294 Z" fill="#ff8a1f" stroke="none"/>
+  </g>
+  </g>
+</svg>
