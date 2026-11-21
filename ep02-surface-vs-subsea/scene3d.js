@@ -736,7 +736,7 @@ function buildSea(G) {
   O.oceanS = makeOcean(72, 1800, 1.6, new THREE.MeshPhongMaterial({ color: 0x1d6890, specular: 0xffc895, shininess: 70, flatShading: true, side: THREE.DoubleSide }));
   G.add(O.oceanS);
   O.ship = buildDrillship(true); G.add(O.ship.group);
-  O.semi = buildSemi(); O.semi.position.set(-150, 0, -330); O.semi.rotation.y = 0.5; G.add(O.semi);
+  O.semi = buildSemi(); O.semi.position.set(-130, 0, -250); O.semi.rotation.y = 0.5; G.add(O.semi);
   // riser group (pivot at LMRP top)
   const R = O.riser = new THREE.Group(); G.add(R);
   const rm = lam(0xd4d9e0), bm = lam(0xf2f4f7);
@@ -801,7 +801,7 @@ function buildDio(G) {
   add(G, box(96, 2, 30), lam(0x1e293b), 7, -73, 0);
   // land block x -36..-6, z -9..9, notch for the cellar at the front
   const lay = [[0, -2.2, 0xd9b77e], [-2.2, -5.5, 0xb98a5a], [-5.5, -8.8, 0x9c7656], [-8.8, -12, 0x7d6650]];
-  const WX0 = -36, WX1 = -6, ZB = -9, ZF = 9, nx0 = -23.2, nx1 = -18.8, nz0 = 4.4, ny = -2.0;
+  const WX0 = -36, WX1 = -6, ZB = -9, ZF = 9, nx0 = -23.2, nx1 = -18.8, nz0 = 4.4, ny = -2.2;
   for (const [y0, y1, c] of lay) {
     const geos = [];
     const h = y0 - y1, yc = (y0 + y1) / 2;
@@ -814,8 +814,8 @@ function buildDio(G) {
   }
   add(LG, box(nx1 - nx0, 0.25, ZF - nz0), lam(0x7b8794), (nx0 + nx1) / 2, ny + 0.12, (nz0 + ZF) / 2);
   add(LG, box(0.5, 10, 0.2), lam(0x64748b), -21, -7, ZF + 0.05);
-  O.bopDL = buildSurfaceBOP(6.6, false);
-  O.bopDL.group.scale.setScalar(0.8); O.bopDL.group.position.set(-21, ny + 0.25, 6.8); LG.add(O.bopDL.group);
+  O.bopDL = buildSurfaceBOP(5.1, false);
+  O.bopDL.group.scale.setScalar(1.2); O.bopDL.group.position.set(-21, ny + 0.25, 6.8); LG.add(O.bopDL.group);
   // mini land rig
   const sg = [];
   for (const sx of [-1, 1]) for (const z of [2.2, 11.4]) {
@@ -866,26 +866,26 @@ function buildStudio(G) {
 // ---------------------------------------------------------------- shots / cameras (set-local coords: [px,py,pz, tx,ty,tz, fov])
 const K_TITLE_L = [{ t: 0, v: [62, 7, 160, 0, 23, 0, 40] }, { t: 5.2, v: [50, 6, 140, 0, 22, 0, 40] }];
 const K_TITLE_R = [{ t: 0, v: [262, 32, 78, 10, 27, 0, 40] }, { t: 5.2, v: [236, 28, 66, 10, 25, 0, 40] }];
-const K_HOOK = [{ t: 5, v: [7, -20, 262, 7, -46, 0, 40] }, { t: 10, v: [7, -24, 240, 7, -46, 0, 40] }];
+const K_HOOK = [{ t: 5, v: [11, 14, 268, 11, -44, 0, 40] }, { t: 10, v: [11, 10, 248, 11, -44, 0, 40] }];
 const K_LAND = [
   { t: 10.0, v: [54, 30, 80, 0, 16, 0, 40] },
   { t: 12.4, v: [18, 8, 32, 0, 3, 0, 42] },
   { t: 13.4, v: [-0.6, 3.4, 15.8, 0, 0.9, 0, 46], stop: true },
   { t: 16.8, v: [1.6, 2.7, 13.2, 0, 0.6, 0, 46] },
   { t: 17.7, v: [0.5, 3.8, 19, -8, 0.8, 7, 44] },
-  { t: 18.5, v: [-2.6, 3.8, 25.0, -12.0, 1.2, 10.0, 42], stop: true },
+  { t: 18.3, v: [-2.6, 3.8, 25.0, -12.0, 1.2, 10.0, 42], stop: true },
   { t: 20.6, v: [-3.4, 3.6, 23.6, -12.0, 1.2, 10.0, 42] },
 ];
 const K_JACK = [
   { t: 20.6, v: [-140, 40, 125, -12, 4, 0, 42] },
   { t: 22.5, v: [-72, 20, -14, -40, 18, 0, 40], stop: true },
   { t: 24.1, v: [-70, 22, -6, -40, 18, 0, 40], stop: true },
-  { t: 25.1, v: [-20, 36, 52, 90, 10, -60, 42] },
-  { t: 26.0, v: [36, 30, 22, 100, 12, -62, 42] },
-];
+  ];
+const K_JACK2 = [{ t: 24.4, v: [-8, 46, -22, 100, 13, -62, 42] }, { t: 26.0, v: [8, 42, -30, 100, 13, -62, 42] }];
 const K_SEA = [
   { t: 26.0, v: [128, 80, 50, 58, 20, 0, 40] },
-  { t: 29.0, v: [116, 70, 44, 56, 20, 0, 40] },
+  { t: 28.3, v: [118, 72, 46, 56, 20, 0, 40], stop: true },
+  { t: 29.15, v: [104, 44, 64, -40, 14, -110, 40] },
   { t: 29.7, v: [56, 8, 56, 0, -4, 0, 42] },
   { t: 30.5, v: [22, -6, 30, 0, -17, 0, 44] },
   { t: 31.9, v: [16, -100, 30, 0, -116, 0, 44] },
@@ -899,14 +899,15 @@ const K_SEA = [
   { t: 46.0, v: [30, SB + 9, 54, 1, SB + 5.5, 0, 42] },
 ];
 const K_COMP = [{ t: 46, v: [-26, 32, 140, -1, 9, 0, 36] }, { t: 64, v: [24, 32, 140, -1, 9, 0, 36] }];
-const K_WHY = [{ t: 64, v: [26, -30, 205, 26, -43, 0, 40] }, { t: 71, v: [29, -32, 190, 29, -43, 0, 40] }];
+const K_WHY = [{ t: 64, v: [26, -27, 210, 26, -40, 0, 40] }, { t: 71, v: [29, -29, 195, 29, -40, 0, 40] }];
 const K_END = [{ t: 71, v: [-16, 14, 116, -1, 7.5, 0, 40] }, { t: 75, v: [10, 12, 100, -1, 7.5, 0, 40] }];
 
 function shotFor(t) {
   if (t < 5) return { set: 'L', v: track(K_TITLE_L, t), set2: 'S', v2: track(K_TITLE_R, t) };
   if (t < 10) return { set: 'D', v: track(K_HOOK, t) };
   if (t < 20.6) return { set: 'L', v: track(K_LAND, t) };
-  if (t < 26) return { set: 'J', v: track(K_JACK, t) };
+  if (t < 24.4) return { set: 'J', v: track(K_JACK, t) };
+  if (t < 26) return { set: 'J', v: track(K_JACK2, t) };
   if (t < 46) return { set: 'S', v: track(K_SEA, t) };
   if (t < 64) return { set: 'T', v: track(K_COMP, t), vo: 520 };
   if (t < 71) return { set: 'D', v: track(K_WHY, t) };
@@ -1069,11 +1070,11 @@ function stateSea(t, v) {
   // ROV
   const R = O.rov.group;
   const dock = [0.95, SB + 1.45, 5.95];
-  if (t < 38.9 || t > 46.5) R.visible = false;
+  if (t < 38.9 || t > 44.2) R.visible = false;
   else {
     R.visible = true;
-    const u = eio((t - 39.0) / 1.6), b = eio((t - 42.4) / 2.0);
-    const x = lerp(18, dock[0], u) + b * 7, y = lerp(SB + 7.5, dock[1], u) + b * 2.5 + 0.08 * Math.sin(t * 2.3), z = lerp(17, dock[2], u) + b * 6;
+    const u = eio((t - 39.0) / 1.6), b = eio((t - 42.3) / 1.6);
+    const x = lerp(18, dock[0], u) + b * 22, y = lerp(SB + 7.5, dock[1], u) + b * 4 + 0.08 * Math.sin(t * 2.3), z = lerp(17, dock[2], u) + b * 12;
     R.position.set(x, y, z); R.rotation.y = lerp(-0.7, 0, u) + b * 0.5; R.rotation.z = 0.03 * Math.sin(t * 1.7);
     O.rov.arm.position.z = -1.35 - 0.5 * eout((t - 40.6) / 0.4) * (1 - b);
   }
@@ -1244,7 +1245,7 @@ function callout(ctx, t, t0, t1, anchor, local, px, py, en, th, color, size = 34
   pill(ctx, px, py + (1 - k) * 14, en, th, color, a, size, align);
 }
 
-function chapter(ctx, t, t0, t1, num, th, en) {
+function chapter(ctx, t, t0, t1, num, th, en, by = 0) {
   const a = win(t, t0, t1, 0.4, 0.3);
   if (a <= 0) return;
   const big = 1 - sstep(t0 + 1.5, t0 + 2.0, t);
@@ -1255,12 +1256,14 @@ function chapter(ctx, t, t0, t1, num, th, en) {
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = 24;
     ctx.font = F(600, 30); ctx.fillStyle = '#ffd166';
+    ctx.translate(0, by);
     ctx.fillText(`${num}  ·  ${en}`, 510, 300 - (1 - k) * 30);
     ctx.font = F(600, 86); const tw = ctx.measureText(th).width;
     if (tw > 860) ctx.font = F(600, Math.floor(86 * 860 / tw));
     ctx.fillStyle = '#ffffff';
     ctx.fillText(th, 510, 380 - (1 - k) * 30);
     ctx.fillStyle = '#ffd166'; ctx.shadowBlur = 0; rr(ctx, 510 - 50 * k, 438, 100 * k, 8, 4); ctx.fill();
+    ctx.translate(0, -by);
   }
   const sm = sstep(t0 + 1.6, t0 + 2.1, t);
   if (sm > 0) {
@@ -1515,7 +1518,7 @@ function drawOverlay(ctx, t) {
   // ---- HOOK (dioramas)
   if (t >= 5 && t < 10.2) {
     const bl = O.bopDL.group, bs = O.bopDS.group;
-    callout(ctx, t, 5.6, 10.0, [0, 3.5, 0.6], bl, 300, 420, 'Surface BOP', 'บนผิว', HEX.surf, 36);
+    callout(ctx, t, 5.6, 10.0, [0, 3.5, 0.6], bl, 290, 780, 'Surface BOP', 'บนผิว', HEX.surf, 36);
     callout(ctx, t, 6.4, 10.0, [0, 12, 3], bs, 700, 1180, 'Subsea BOP', 'บนพื้นทะเล', HEX.sub, 36);
     // depth bar on the sea block
     const a = win(t, 7.0, 10.0, 0.4, 0.3);
@@ -1530,7 +1533,9 @@ function drawOverlay(ctx, t) {
       ctx.save(); ctx.globalAlpha = a; ctx.font = F(600, 36); ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
       ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 10;
       ctx.fillText('0 m', PL.x, PL.y + 120);
-      ctx.textAlign = 'right'; ctx.fillText('1,500–3,000 m', Math.min(950, P1.x + 30), P1.y + 56);
+      ctx.textAlign = 'right'; ctx.globalAlpha = a * sstep(7.8, 8.3, t);
+      ctx.font = F(400, 30); ctx.fillText('ลึก', Math.min(P0.x - 6, 945), (P0.y + P1.y) / 2 - 26);
+      ctx.font = F(600, 38); ctx.fillText('1,500–3,000 m', Math.min(P0.x - 6, 945), (P0.y + P1.y) / 2 + 18);
       ctx.restore();
     }
     const vs = win(t, 5.3, 10.0, 0.4, 0.3);
@@ -1547,7 +1552,7 @@ function drawOverlay(ctx, t) {
     if (t < 20.6) {
       callout(ctx, t, 10.5, 12.5, [0, 26, 0], SETL, 320, 520, 'Land Rig', 'แท่นเจาะบนบก', HEX.surf, 34);
       callout(ctx, t, 11.2, 12.9, [5, 7.0, 7.5], SETL, 640, 1120, 'Rig Floor', 'พื้นแท่นเจาะ', '#94a3b8', 32);
-      callout(ctx, t, 13.4, 16.2, [-2.6, 6.5, 2.0], SETL, 300, 300, 'Rig Floor ↑', 'พื้นแท่นเจาะ', '#94a3b8', 32);
+      callout(ctx, t, 13.4, 16.2, [-1.5, 6.5, 6.8], SETL, 300, 300, 'Rig Floor ↑', 'พื้นแท่นเจาะ', '#94a3b8', 32);
       callout(ctx, t, 13.6, 17.3, [0.62, 3.0, 0.45], O.bopL.group, 720, 440, 'Surface BOP', 'บนปากหลุม', HEX.surf, 36);
       callout(ctx, t, 14.0, 17.3, [0.45, 0.4, 0.4], O.bopL.group, 690, 1180, 'Wellhead', 'ปากหลุม', HEX.conn, 34);
       callout(ctx, t, 15.6, 17.4, [-2.25, 0.15, 1.0], SETL, 280, 560, 'Hydraulic lines', 'ท่อไฮดรอลิก', HEX.hyd, 32);
@@ -1570,8 +1575,8 @@ function drawOverlay(ctx, t) {
   // ---- SUBSEA BOP
   if (t >= 26 && t < 46.2) {
     chapter(ctx, t, 26.0, 46.0, '02', 'Subsea BOP', 'ใต้ทะเล · ON THE SEABED');
-    callout(ctx, t, 26.5, 29.4, [0, 40, 0], O.ship.group, 330, 560, 'Drillship', 'เรือขุดเจาะ', HEX.sub, 36);
-    callout(ctx, t, 27.1, 29.4, [0, 30, 0], O.semi, 690, 330, 'Semi-submersible', 'แท่นกึ่งดำน้ำ', HEX.sub, 30);
+    callout(ctx, t, 26.5, 28.5, [0, 40, 0], O.ship.group, 330, 560, 'Drillship', 'เรือขุดเจาะ', HEX.sub, 36);
+    callout(ctx, t, 28.5, 29.6, [0, 30, 0], O.semi, 640, 420, 'Semi-submersible', 'แท่นกึ่งดำน้ำ', HEX.sub, 30);
     callout(ctx, t, 30.6, 32.4, [-0.8, camera.position.y - 12, 0], null, 700, 520, 'Marine Riser', 'ท่อไรเซอร์', '#94a3b8', 34);
     depthMeter(ctx, t);
     const bs = O.bopS.group;
@@ -1594,7 +1599,7 @@ function drawOverlay(ctx, t) {
     callout(ctx, t, 36.15, 38.8, O.bopS.anchors.podY, bs, 280, 1160, 'Yellow Pod', 'พ็อดเหลือง', '#eab308', 34);
     callout(ctx, t, 36.5, 38.8, [-1.0, 30, 1.1], O.riser, 330, 330, 'Umbilical (MUX)', 'สายควบคุม', '#e2e8f0', 32);
     callout(ctx, t, 37.4, 38.8, O.bopS.anchors.acc, bs, 720, 960, 'Accumulators', 'ถังแรงดัน', '#7dd3fc', 32);
-    callout(ctx, t, 39.4, 42.0, [0, 2.1, 0], O.rov.group, 330, 420, 'ROV', 'หุ่นยนต์ใต้น้ำ', '#facc15', 36);
+    callout(ctx, t, 40.0, 42.0, [0, 2.1, 0], O.rov.group, 330, 420, 'ROV', 'หุ่นยนต์ใต้น้ำ', '#facc15', 36);
     callout(ctx, t, 40.7, 42.1, O.bopS.anchors.panel, bs, 680, 1140, 'Hot Stab', 'เสียบสั่งปิด BOP', '#f97316', 34);
     alarm(ctx, t, 42.4, 43.9, 'EDS!', 'แท่นลอยออกนอกตำแหน่ง', 470);
     if (t > 42.6 && t < 44.6) arrowRight(ctx, 560, 270, 300, win(t, 42.6, 44.6, 0.2, 0.3), '#ffd166', 'Drift-off');
@@ -1604,7 +1609,7 @@ function drawOverlay(ctx, t) {
   }
   // ---- COMPARISON
   if (t >= 46 && t < 64.3) {
-    chapter(ctx, t, 46.0, 64.0, '03', 'เปรียบเทียบ', 'SURFACE vs SUBSEA');
+    chapter(ctx, t, 46.0, 64.0, '03', 'เปรียบเทียบ', 'SURFACE vs SUBSEA', 560);
     compTable(ctx, t);
     const sa = win(t, 55.0, 57.8, 0.3, 0.3);
     if (sa > 0) {
@@ -1621,7 +1626,8 @@ function drawOverlay(ctx, t) {
     arrowRight(ctx, 560, 560, 260, win(t, 65.0, 70.8, 0.3, 0.3), '#ffd166', 'คลื่น / ลม');
     callout(ctx, t, 65.4, 68.0, [0, 8, 3], O.bopDS.group, 700, 1120, 'BOP', 'อยู่กับที่บนพื้นทะเล', HEX.sub, 34);
     callout(ctx, t, 68.4, 70.9, [0, 13, 1.5], O.bopDS.lmrp, 720, 700, 'LMRP', 'ปลดตามแท่นไป', HEX.lmrp, 32);
-    badge(ctx, t, 69.0, 70.9, 510, 1140, 'Lower stack seals the well', 'หลุมยังปิดสนิท ✓', '#16a34a', 46);
+    callout(ctx, t, 68.8, 70.9, [0, 5, 3], O.bopDS.group, 300, 1080, 'Lower Stack', 'ยังปิดหลุมไว้', HEX.lower, 32);
+    badge(ctx, t, 69.2, 70.9, 510, 880, 'Lower stack seals the well', 'หลุมยังปิดสนิท ✓', '#16a34a', 46);
   }
   // ---- END
   if (t >= 71) {
@@ -1639,6 +1645,7 @@ function drawOverlay(ctx, t) {
   fade(ctx, t, 10.0, '#06101e');
   fade(ctx, t, 20.6, '#06101e');
   fade(ctx, t, 26.0, '#06101e');
+  fade(ctx, t, 24.4, '#06101e', 0.15);
   fade(ctx, t, 46.0, '#06101e');
   fade(ctx, t, 64.0, '#06101e');
   fade(ctx, t, 71.0, '#06101e');
@@ -1677,7 +1684,7 @@ const cues = [
   { t: 17.5, sfx: 'whoosh' }, { t: 17.9, sfx: 'blip' }, { t: 19.0, sfx: 'hiss' },
   { t: 20.5, sfx: 'whoosh' }, { t: 20.9, sfx: 'blip' }, { t: 21.4, sfx: 'blip' }, { t: 22.6, sfx: 'blip' },
   { t: 24.4, sfx: 'whoosh' }, { t: 24.8, sfx: 'blip' },
-  { t: 25.9, sfx: 'whoosh' }, { t: 26.5, sfx: 'blip' }, { t: 27.1, sfx: 'blip' },
+  { t: 25.9, sfx: 'whoosh' }, { t: 26.5, sfx: 'blip' }, { t: 28.5, sfx: 'blip' },
   { t: 29.5, sfx: 'whoosh' }, { t: 30.0, sfx: 'bubble' }, { t: 30.6, sfx: 'blip' }, { t: 31.8, sfx: 'bubble' },
   { t: 32.9, sfx: 'blip' }, { t: 33.9, sfx: 'blip' }, { t: 34.4, sfx: 'blip' },
   { t: 35.95, sfx: 'blip' }, { t: 36.3, sfx: 'hiss' }, { t: 37.4, sfx: 'blip' },
