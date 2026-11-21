@@ -5,8 +5,12 @@ Usage: python3 tools/mix_vo.py <video_in.mp4> <vo_dir> <video_out.mp4>
 
 <vo_dir> holds script.json ([{"id": 1, "t": 0.4, "end": 5.0, "text": ...}, ...]) and
 voNN.mp3 files (NN = zero-padded id). Each clip starts at `t`; a clip longer than its
-window (end - t) is sped up (max 1.25x). Music/SFX already in the video are ducked
-under the voice with a sidechain compressor. Video stream is copied, not re-encoded.
+window (end - t) is sped up (max 1.25x).
+
+Voice clean-up per clip: FFT denoise, silence trim at head/tail, gentle de-ess, voice EQ,
+short fades (no clicks). Voice bus: level-matched across voices, light compression and a
+very small shared room so separate takes sound like one continuous read. Music/SFX
+already in the video are ducked smoothly under the voice. Video stream is copied.
 """
 import json, os, subprocess, sys
 
@@ -28,27 +32,40 @@ vo_files = [os.path.join(vo_dir, f"vo{seg['id']:02d}.mp3") for seg in script]
 vo_gain_db = VO_TARGET_DB - mean_db(vo_files)
 print(f"voice level gain {vo_gain_db:+.1f} dB")
 
+# per-clip clean-up (before timing): denoise, trim silence both ends, de-ess, EQ
+CLEAN = ("afftdn=nr=12:nf=-40:tn=1,"
+         "silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.03,"
+         "areverse,silenceremove=start_periods=1:start_threshold=-48dB:start_silence=0.08,areverse,"
+         "highpass=f=85,equalizer=f=250:t=q:w=1.2:g=-2.5,equalizer=f=3200:t=q:w=1.0:g=2,"
+         "deesser=i=0.35:m=0.5:f=0.5")
+
 inputs, chains, labels = ['-i', src], [], []
 for k, seg in enumerate(script, start=1):
-    f = os.path.join(vo_dir, f"vo{seg['id']:02d}.mp3")
+    f = vo_files[k - 1]
     d, win = dur(f), seg['end'] - seg['t']
+    d = max(0.1, d - 0.15)  # rough length after silence trim
     tempo = min(1.25, d / win) if d > win else 1.0
     inputs += ['-i', f]
     ms = int(round(seg['t'] * 1000))
-    chain = f"[{k}:a]aresample=48000,aformat=channel_layouts=stereo"
+    chain = f"[{k}:a]aresample=48000,aformat=channel_layouts=mono,{CLEAN}"
     if tempo > 1.0:
         chain += f",atempo={tempo:.3f}"
-        print(f"vo{seg['id']:02d}: {d:.2f}s > {win:.2f}s window, tempo {tempo:.3f}")
-    chain += f",adelay={ms}|{ms}[v{k}]"
+        print(f"vo{seg['id']:02d}: ~{d:.2f}s > {win:.2f}s window, tempo {tempo:.3f}")
+    chain += ",afade=t=in:d=0.02,areverse,afade=t=in:d=0.08,areverse"
+    chain += f",aformat=channel_layouts=stereo,adelay={ms}|{ms}[v{k}]"
     chains.append(chain)
     labels.append(f"[v{k}]")
 
 n = len(script)
 fc = ';'.join(chains)
-fc += f";{''.join(labels)}amix=inputs={n}:normalize=0,highpass=f=80,volume={vo_gain_db:.2f}dB,acompressor=threshold=-20dB:ratio=3:attack=5:release=120,volume=2.2,asplit=2[vo][sc]"
+# voice bus: level match, compression, tiny shared room for cohesion
+fc += (f";{''.join(labels)}amix=inputs={n}:normalize=0,volume={vo_gain_db:.2f}dB,"
+       "acompressor=threshold=-20dB:ratio=3:attack=8:release=150:makeup=1,volume=2.2,"
+       "aecho=in_gain=1.0:out_gain=0.95:delays=23|41:decays=0.10|0.06,asplit=2[vo][sc]")
 fc += ";[0:a]volume=0.85[mus]"
-fc += ";[mus][sc]sidechaincompress=threshold=0.03:ratio=6:attack=20:release=400:makeup=1[duck]"
-fc += ";[duck][vo]amix=inputs=2:normalize=0,alimiter=limit=0.89[aout]"
+# smooth ducking: slower attack/release so the music breathes instead of pumping
+fc += ";[mus][sc]sidechaincompress=threshold=0.025:ratio=5:attack=60:release=900:knee=6:makeup=1[duck]"
+fc += ";[duck][vo]amix=inputs=2:normalize=0,alimiter=limit=0.89:attack=5:release=60[aout]"
 
 cmd = ['ffmpeg', '-y', '-loglevel', 'error', *inputs, '-filter_complex', fc,
        '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k',
