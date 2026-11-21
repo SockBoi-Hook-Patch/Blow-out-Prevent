@@ -174,7 +174,7 @@ function sackLabelTex() {
   x.fillStyle = '#d62828'; x.fillRect(0, 70, 512, 150);
   x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#ffffff';
   fitFont(x, 'BARITE', 600, 120, 460); x.fillText('BARITE', 256, 148);
-  x.fillStyle = '#1f2937'; fitFont(x, 'แบไรต์ · เพิ่มน้ำหนัก', 600, 40, 440); x.fillText('แบไรต์ · เพิ่มน้ำหนัก', 256, 270);
+  x.fillStyle = '#1f2937'; fitFont(x, 'เพิ่มน้ำหนัก Mud', 600, 40, 440); x.fillText('เพิ่มน้ำหนัก Mud', 256, 270);
   x.fillStyle = '#d62828'; x.fillRect(60, 320, 392, 6);
   x.fillStyle = '#111827'; fitFont(x, 'namman.story', 600, 84, 440); x.fillText('namman.story', 256, 410);
   x.fillStyle = '#374151'; fitFont(x, 'DRILLING GRADE · API 13A', 600, 32, 430); x.fillText('DRILLING GRADE · API 13A', 256, 490);
@@ -1281,8 +1281,8 @@ function titleCard(ctx, t) {
 
 // ---- circulation loop strip
 const STEPS = [
-  { t: 18.0, th: 'บ่อโคลน' }, { t: 21.5, th: 'ปั๊ม' }, { t: 25.0, th: 'ท่อตั้ง' }, { t: 28.5, th: 'ก้านเจาะ' },
-  { t: 32.0, th: 'หัวฉีด' }, { t: 35.4, th: 'ขาขึ้น' }, { t: 38.8, th: 'ตะแกรง' },
+  { t: 18.0, th: 'Mud Pit' }, { t: 21.5, th: 'Pump' }, { t: 25.0, th: 'Standpipe' }, { t: 28.5, th: 'Drill Pipe' },
+  { t: 32.0, th: 'Nozzle' }, { t: 35.4, th: 'Annulus' }, { t: 38.8, th: 'Shaker' },
 ];
 function loopStrip(ctx, t) {
   const A = win(t, 20.0, 45.0, 0.5, 0.4); if (A <= 0) return;
@@ -1350,10 +1350,10 @@ function pressGauge(ctx, t, a) {
   const x = 700, y = 560, w = 252, h = 420;
   ctx.save(); panel(ctx, x, y, w, h, a);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#fff'; ctx.font = F(600, 30); ctx.fillText('แรงดัน', x + w / 2, y + 36);
-  ctx.font = F(400, 22); ctx.fillStyle = 'rgba(200,215,240,0.85)'; ctx.fillText('PRESSURE', x + w / 2, y + 66);
+  ctx.fillStyle = '#fff'; ctx.font = F(600, 30); ctx.fillText('Pressure', x + w / 2, y + 36);
+  ctx.font = F(400, 22); ctx.fillStyle = 'rgba(200,215,240,0.85)'; ctx.fillText('แรงดัน', x + w / 2, y + 66);
   const bh = 200, by = y + 92;
-  for (const [val, col, th, en, bx] of [[0.82 * k, '#60a5fa', 'โคลน', 'Mud', x + 72], [0.62 * k, '#f87171', 'ในหิน', 'Rock', x + w - 72]]) {
+  for (const [val, col, th, en, bx] of [[0.82 * k, '#60a5fa', 'Mud', 'Hydrostatic', x + 72], [0.62 * k, '#f87171', 'Rock', 'Formation', x + w - 72]]) {
     ctx.fillStyle = 'rgba(255,255,255,0.12)'; rr(ctx, bx - 28, by, 56, bh, 12); ctx.fill();
     const hh = Math.max(1, bh * val);
     ctx.fillStyle = col; rr(ctx, bx - 28, by + bh - hh, 56, hh, 12); ctx.fill();
@@ -1412,8 +1412,8 @@ function pulsePanel(ctx, t, a) {
   const x = 560, y = 560, w = 390, h = 250;
   ctx.save(); panel(ctx, x, y, w, h, a);
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#fff'; ctx.font = F(600, 28); ctx.fillText('แรงดันที่ผิวดิน', x + 26, y + 36);
-  ctx.font = F(400, 20); ctx.fillStyle = 'rgba(200,215,240,0.85)'; ctx.fillText('SURFACE PRESSURE', x + 26, y + 66);
+  ctx.fillStyle = '#fff'; ctx.font = F(600, 28); ctx.fillText('Surface Pressure', x + 26, y + 36);
+  ctx.font = F(400, 20); ctx.fillStyle = 'rgba(200,215,240,0.85)'; ctx.fillText('แรงดันที่ผิวดิน (Standpipe)', x + 26, y + 66);
   const gx0 = x + 24, gx1 = x + w - 24, gy = y + 160, span = 4.0;
   ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx0, gy); ctx.lineTo(gx1, gy); ctx.stroke();
   ctx.strokeStyle = HEX.mwd; ctx.lineWidth = 4; ctx.beginPath();
@@ -1443,8 +1443,8 @@ function windowGauge(ctx, t) {
   const Y = v => lerp(gy1, gy0, (v - vmin) / (vmax - vmin));
   ctx.save(); panel(ctx, x, y, w, h, a * 0.95); ctx.globalAlpha = a;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#fff'; ctx.font = F(600, 30); ctx.fillText('น้ำหนักโคลน', x + w / 2, y + 36);
-  ctx.font = F(400, 20); ctx.fillStyle = 'rgba(200,215,240,0.85)'; ctx.fillText('MUD WEIGHT · ppg', x + w / 2, y + 66);
+  ctx.fillStyle = '#fff'; ctx.font = F(600, 30); ctx.fillText('Mud Weight', x + w / 2, y + 36);
+  ctx.font = F(400, 20); ctx.fillStyle = 'rgba(200,215,240,0.85)'; ctx.fillText('หน่วย ppg', x + w / 2, y + 66);
   // zones
   ctx.fillStyle = 'rgba(239,68,68,0.28)'; ctx.fillRect(gx - 26, Y(PORE), 52, gy1 - Y(PORE));
   ctx.fillStyle = 'rgba(34,197,94,0.35)'; ctx.fillRect(gx - 26, Y(FRAC), 52, Y(PORE) - Y(FRAC));
@@ -1452,7 +1452,7 @@ function windowGauge(ctx, t) {
   ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2; ctx.strokeRect(gx - 26, gy0, 52, gy1 - gy0);
   for (let v = 8; v <= 18; v += 2) { ctx.fillStyle = 'rgba(255,255,255,0.65)'; ctx.font = F(400, 20); ctx.textAlign = 'right'; ctx.fillText(String(v), gx - 36, Y(v)); }
   // lines
-  for (const [v, col, en, th] of [[FRAC, HEX.frac, 'Fracture', 'หินแตก'], [PORE, HEX.pore, 'Pore', 'แรงดันในหิน']]) {
+  for (const [v, col, en, th] of [[FRAC, HEX.frac, 'Fracture', 'Pressure'], [PORE, HEX.pore, 'Pore', 'Pressure']]) {
     ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(gx - 34, Y(v)); ctx.lineTo(gx + 40, Y(v)); ctx.stroke();
     ctx.textAlign = 'left'; ctx.font = F(600, 22); ctx.fillStyle = col; ctx.fillText(en, gx + 46, Y(v) - 13);
     ctx.font = F(400, 20); ctx.fillStyle = '#fff'; ctx.fillText(th, gx + 46, Y(v) + 13);
@@ -1483,9 +1483,9 @@ function windowGauge(ctx, t) {
 
 // ---- 3 mud types
 const TYPES = [
-  { t: 104.0, tag: 'WBM', th: 'โคลนฐานน้ำ', d: 'ใช้มากที่สุด · ราคาถูก', en: 'Water-based · most common, cheapest', col: HEX.wbm, ic: 'drop' },
-  { t: 105.6, tag: 'OBM', th: 'โคลนฐานน้ำมัน', d: 'หินดินดานบวมน้ำ · หลุมร้อน', en: 'Oil-based · reactive shale, hot wells', col: HEX.obm, ic: 'oil' },
-  { t: 107.2, tag: 'SBM', th: 'โคลนสังเคราะห์', d: 'งานนอกชายฝั่ง · กระทบน้อยกว่า', en: 'Synthetic · offshore, lower impact', col: HEX.sbm, ic: 'leaf' },
+  { t: 104.0, tag: 'WBM', th: 'Water-Based', d: 'ใช้มากที่สุด · ราคาถูก', en: 'Water-based · most common, cheapest', col: HEX.wbm, ic: 'drop' },
+  { t: 105.6, tag: 'OBM', th: 'Oil-Based', d: 'Reactive Shale · หลุมร้อน', en: 'Oil-based · reactive shale, hot wells', col: HEX.obm, ic: 'oil' },
+  { t: 107.2, tag: 'SBM', th: 'Synthetic-Based', d: 'Offshore · กระทบสิ่งแวดล้อมน้อยกว่า', en: 'Synthetic · offshore, lower impact', col: HEX.sbm, ic: 'leaf' },
 ];
 function typeIcon(ctx, kind, x, y, col) {
   ctx.save(); ctx.fillStyle = '#fff'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 6; ctx.lineCap = 'round';
@@ -1525,14 +1525,14 @@ function endCard(ctx, t) {
   const k = eout((t - 113.8) / 0.8);
   ctx.save(); ctx.globalAlpha = a; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.shadowColor = 'rgba(20,10,40,0.6)'; ctx.shadowBlur = 28;
-  ctx.font = F(600, 30); ctx.fillStyle = '#ffd59a'; ctx.fillText('DRILLING MUD', 510, 258 - (1 - k) * 20);
-  ctx.font = F(600, 120); ctx.fillStyle = '#fff'; ctx.fillText('น้ำโคลนเจาะ', 510, 360 - (1 - k) * 30);
+  ctx.font = F(600, 30); ctx.fillStyle = '#ffd59a'; ctx.fillText('OIL & GAS 101 · EP.03', 510, 258 - (1 - k) * 20);
+  ctx.font = F(600, 120); ctx.fillStyle = '#fff'; ctx.fillText('Drilling Mud', 510, 360 - (1 - k) * 30);
   ctx.shadowBlur = 0; ctx.fillStyle = '#ffb627'; rr(ctx, 510 - 80 * k, 440, 160 * k, 10, 5); ctx.fill();
   ctx.shadowBlur = 24;
   ctx.font = F(600, 62); ctx.fillStyle = '#ffffff'; ctx.fillText('= เลือดของหลุมเจาะ', 510, 515);
   ctx.font = F(400, 36); ctx.fillStyle = '#ffe3a3'; ctx.fillText('the lifeblood of every well', 510, 580);
   // 5 jobs recap chips
-  const chips = ['คุมแรงดัน', 'พาเศษหิน', 'ระบายร้อน', 'ฉาบผนัง', 'ส่งข้อมูล'];
+  const chips = ['คุม Pressure', 'พา Cuttings', 'ระบายร้อน Bit', 'Filter Cake', 'Mud Pulse'];
   const u = sstep(115.0, 115.6, t);
   if (u > 0) {
     ctx.globalAlpha = a * u; ctx.font = F(600, 28); ctx.shadowBlur = 10;
@@ -1557,44 +1557,44 @@ function drawOverlay(ctx, t) {
   // ---- NOT DIRT
   if (t >= 8 && t < 18.2) {
     chapter(ctx, t, 8.0, 18.0, '01', 'ไม่ใช่แค่ดินโคลน', 'NOT JUST DIRT');
-    callout(ctx, t, 9.0, 12.6, [18.25, 3.0, -2.2], L, 330, 560, 'Mud Tank', 'บ่อโคลน', HEX.mud);
-    callout(ctx, t, 9.5, 12.6, [18.25, 4.1, -4.0], L, 700, 700, 'Agitator', 'ใบกวน', HEX.pump);
-    callout(ctx, t, 14.0, 17.9, [16.1, 1.2, 3.0], L, 680, 560, 'BARITE', 'เพิ่มน้ำหนัก', HEX.barite);
-    callout(ctx, t, 14.5, 17.9, [14.6, 1.2, 3.0], L, 330, 720, 'BENTONITE', 'เพิ่มความหนืด', HEX.bent);
+    callout(ctx, t, 9.0, 12.6, [18.25, 3.0, -2.2], L, 330, 560, 'Mud Tank', '', HEX.mud);
+    callout(ctx, t, 9.5, 12.6, [18.25, 4.1, -4.0], L, 700, 700, 'Agitator', 'กวน Mud', HEX.pump);
+    callout(ctx, t, 14.0, 17.9, [16.1, 1.2, 3.0], L, 680, 560, 'Barite', 'เพิ่มน้ำหนัก', HEX.barite);
+    callout(ctx, t, 14.5, 17.9, [14.6, 1.2, 3.0], L, 330, 720, 'Bentonite', 'เพิ่มความหนืด', HEX.bent);
   }
   // ---- CIRCULATION LOOP
   if (t >= 18 && t < 45.2) {
-    chapter(ctx, t, 18.0, 45.0, '02', 'วงจรน้ำโคลน', 'CIRCULATION LOOP');
+    chapter(ctx, t, 18.0, 45.0, '02', 'วงจร Mud', 'CIRCULATION LOOP');
     loopStrip(ctx, t);
     if (t < 28.5) {
-      callout(ctx, t, 18.5, 21.6, [24.0, 3.0, -4.0], L, 360, 560, 'Mud Pits', 'บ่อโคลน', HEX.mud);
-      callout(ctx, t, 22.2, 25.2, [23.65, 1.35, 7.85], L, 560, 560, 'Mud Pump', 'ปั๊ม 3 ลูกสูบ', HEX.pump);
-      callout(ctx, t, 25.6, 28.6, [4.7, 13, 1.5], L, 740, 560, 'Standpipe', 'ท่อตั้ง', '#94a3b8');
-      callout(ctx, t, 25.8, 28.6, [0, 21.0, 0.6], L, 300, 470, 'Top Drive', 'หัวขับ', '#ef4444');
+      callout(ctx, t, 18.5, 21.6, [24.0, 3.0, -4.0], L, 360, 560, 'Mud Pit', '', HEX.mud);
+      callout(ctx, t, 22.2, 25.2, [23.65, 1.35, 7.85], L, 560, 560, 'Mud Pump', 'Triplex', HEX.pump);
+      callout(ctx, t, 25.6, 28.6, [4.7, 13, 1.5], L, 740, 560, 'Standpipe', '', '#94a3b8');
+      callout(ctx, t, 25.8, 28.6, [0, 21.0, 0.6], L, 300, 470, 'Top Drive', '', '#ef4444');
     } else if (t < 38.8) {
-      callout(ctx, t, 28.8, 31.9, [0, -6, 0.3], WG, 300, 620, 'Drill Pipe', 'ก้านเจาะ', '#94a3b8');
-      callout(ctx, t, 32.6, 35.6, [0.8, YB + 0.3, 0.9], WG, 340, 600, 'Bit Nozzles', 'หัวฉีดโคลน', HEX.flow);
-      callout(ctx, t, 35.8, 38.9, [-1.25, -27.5, 0.2], WG, 290, 560, 'Annulus', 'ช่องว่างรอบก้าน', HEX.mud);
-      callout(ctx, t, 36.0, 38.9, [1.2, -30.5, 0.2], WG, 720, 760, 'Cuttings', 'เศษหิน', '#8b7355');
+      callout(ctx, t, 28.8, 31.9, [0, -6, 0.3], WG, 300, 620, 'Drill Pipe', 'Mud ลง ↓', '#94a3b8');
+      callout(ctx, t, 32.6, 35.6, [0.8, YB + 0.3, 0.9], WG, 340, 600, 'Bit Nozzles', 'Jet', HEX.flow);
+      callout(ctx, t, 35.8, 38.9, [-1.25, -27.5, 0.2], WG, 290, 560, 'Annulus', 'Mud ขึ้น ↑', HEX.mud);
+      callout(ctx, t, 36.0, 38.9, [1.2, -30.5, 0.2], WG, 720, 760, 'Cuttings', '', '#8b7355');
     } else {
-      callout(ctx, t, 39.0, 42.1, [12.25, 4.9, -3.0], L, 330, 560, 'Shale Shaker', 'ตะแกรงสั่น', HEX.shaker);
-      callout(ctx, t, 39.2, 42.1, [12.25, 1.3, 0.9], L, 720, 1120, 'Cuttings Skip', 'ถังเศษหิน', '#f97316');
-      callout(ctx, t, 42.4, 45.1, [24.0, 3.0, -4.0], L, 620, 640, 'Back to Pits', 'กลับลงบ่อ', HEX.flow);
+      callout(ctx, t, 39.0, 42.1, [12.25, 4.9, -3.0], L, 330, 560, 'Shale Shaker', '', HEX.shaker);
+      callout(ctx, t, 39.2, 42.1, [12.25, 1.3, 0.9], L, 720, 1120, 'Cuttings', 'ทิ้งลงถัง', '#f97316');
+      callout(ctx, t, 42.4, 45.1, [24.0, 3.0, -4.0], L, 620, 640, 'Mud Pit', 'กลับลงบ่อ', HEX.flow);
     }
   }
   // ---- 5 JOBS
   if (t >= 45 && t < 85.2) {
-    chapter(ctx, t, 45.0, 85.0, '03', '5 หน้าที่ของโคลน', '5 JOBS OF MUD');
-    jobCard(ctx, t, 47.0, 53.0, 1, 'คุมแรงดันในหลุม', 'CONTROL WELL PRESSURE', '#3b82f6');
-    jobCard(ctx, t, 53.0, 61.0, 2, 'พาเศษหินขึ้นมา', 'CARRY CUTTINGS UP', '#a16207');
-    jobCard(ctx, t, 61.0, 69.0, 3, 'ระบายความร้อนหัวเจาะ', 'COOL & LUBRICATE THE BIT', '#ef4444');
-    jobCard(ctx, t, 69.0, 77.0, 4, 'ฉาบผนังหลุม', 'BUILD A FILTER CAKE', HEX.cake);
-    jobCard(ctx, t, 77.0, 85.0, 5, 'ส่งข้อมูลขึ้นมา', 'SEND DATA (MUD PULSES)', '#0891b2');
+    chapter(ctx, t, 45.0, 85.0, '03', '5 หน้าที่ของ Mud', '5 JOBS OF MUD');
+    jobCard(ctx, t, 47.0, 53.0, 1, 'คุม Pressure', 'HYDROSTATIC PRESSURE', '#3b82f6');
+    jobCard(ctx, t, 53.0, 61.0, 2, 'พา Cuttings ขึ้นมา', 'HOLE CLEANING', '#a16207');
+    jobCard(ctx, t, 61.0, 69.0, 3, 'ระบายความร้อน Bit', 'COOL & LUBRICATE', '#ef4444');
+    jobCard(ctx, t, 69.0, 77.0, 4, 'สร้าง Filter Cake', 'WELLBORE STABILITY', HEX.cake);
+    jobCard(ctx, t, 77.0, 85.0, 5, 'ส่งข้อมูล (Mud Pulse)', 'MWD TELEMETRY', '#0891b2');
     // job 1
     const j1 = win(t, 47.0, 52.9, 0.5, 0.4);
     pressArrows(ctx, t, j1);
     pressGauge(ctx, t, j1);
-    callout(ctx, t, 47.8, 52.9, [-RH - 1.2, -37.0, 0], WG, 300, 1170, 'Formation', 'แรงดันในหิน', HEX.danger);
+    callout(ctx, t, 47.8, 52.9, [-RH - 1.2, -37.0, 0], WG, 300, 1170, 'Pore Pressure', 'ในหิน', HEX.danger);
     if (t > 49.4) {
       const a = win(t, 49.4, 52.9, 0.4, 0.4);
       ctx.save(); ctx.globalAlpha = a; ctx.font = F(600, 40); const s = 'P = 0.052 × MW × D';
@@ -1603,7 +1603,7 @@ function drawOverlay(ctx, t) {
       ctx.fillStyle = HEX.ink; ctx.textAlign = 'center'; ctx.fillText(s, 826 - w / 2, 1048); ctx.restore();
     }
     // job 2
-    callout(ctx, t, 53.8, 60.7, [1.25, -31.0, 0.3], WG, 720, 560, 'Cuttings', 'เศษหิน', '#8b7355');
+    callout(ctx, t, 53.8, 60.7, [1.25, -31.0, 0.3], WG, 720, 560, 'Cuttings', 'ขึ้น ↑', '#8b7355');
     if (t > 54.5 && t < 60.8) {
       const a = win(t, 54.5, 60.7, 0.4, 0.4);
       ctx.save(); ctx.globalAlpha = a * 0.9; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 8;
@@ -1615,32 +1615,32 @@ function drawOverlay(ctx, t) {
       ctx.restore();
     }
     // job 3
-    callout(ctx, t, 61.6, 64.9, [1.2, YB + 1.2, 0.5], WG, 330, 560, 'Hot Bit', 'หัวเจาะร้อนจัด', '#ef4444');
-    callout(ctx, t, 64.9, 68.8, [-0.9, YB + 2.6, 0.4], WG, 330, 560, 'Mud Cools', 'โคลนช่วยให้เย็น', '#38bdf8');
+    callout(ctx, t, 61.6, 64.9, [1.2, YB + 1.2, 0.5], WG, 330, 560, 'Bit', 'ร้อนจัด', '#ef4444');
+    callout(ctx, t, 64.9, 68.8, [-0.9, YB + 2.6, 0.4], WG, 330, 560, 'Mud', 'ช่วยให้เย็น', '#38bdf8');
     thermo(ctx, t, win(t, 61.5, 68.8, 0.4, 0.4));
     // job 4
-    callout(ctx, t, 69.8, 76.8, [3.2, -25.4, 0], WG, 700, 520, 'Porous Rock', 'หินมีรูพรุน', '#e1b98c');
-    callout(ctx, t, 71.6, 76.8, [RH - 0.08, -29.0, 0.1], WG, 330, 1120, 'Filter Cake', 'แผ่นโคลนฉาบผนัง', HEX.cake);
+    callout(ctx, t, 69.8, 76.8, [3.2, -25.4, 0], WG, 700, 520, 'Sandstone', 'มีรูพรุน', '#e1b98c');
+    callout(ctx, t, 71.6, 76.8, [RH - 0.08, -29.0, 0.1], WG, 330, 1120, 'Filter Cake', '', HEX.cake);
     // job 5
-    callout(ctx, t, 77.7, 81.2, [RCO, (Y_MWD0 + Y_MWD1) / 2, 0.2], WG, 700, 560, 'MWD Tool', 'เครื่องมือวัด', HEX.mwd);
-    callout(ctx, t, 81.6, 84.8, [0, -12, 0.3], WG, 300, 640, 'Mud Pulses', 'คลื่นแรงดัน', HEX.mwd);
+    callout(ctx, t, 77.7, 81.2, [RCO, (Y_MWD0 + Y_MWD1) / 2, 0.2], WG, 700, 560, 'MWD', 'วัดใต้หลุม', HEX.mwd);
+    callout(ctx, t, 81.6, 84.8, [0, -12, 0.3], WG, 300, 640, 'Mud Pulse', 'ขึ้นผิวดิน ↑', HEX.mwd);
     pulsePanel(ctx, t, win(t, 81.8, 84.8, 0.4, 0.4));
   }
   // ---- MUD WEIGHT WINDOW
   if (t >= 85 && t < 103.6) {
-    chapter(ctx, t, 85.0, 103.4, '04', 'ช่วงน้ำหนักโคลน', 'MUD WEIGHT WINDOW');
+    chapter(ctx, t, 85.0, 103.4, '04', 'Mud Weight Window', 'ช่วงที่พอดี');
     windowGauge(ctx, t);
     badge(ctx, t, 87.0, 90.4, 650, 470, 'IN THE WINDOW', 'พอดี ✓', '#16a34a', 50);
-    alarm(ctx, t, 91.2, 95.0, 'KICK!', 'โคลนเบาไป', 470, [255, 20, 20], 80, 650);
-    callout(ctx, t, 91.8, 95.0, [-1.2, -31.0, 0.3], WG, 640, 1120, 'Gas', 'แก๊สดันเข้าหลุม', HEX.danger);
-    if (t > 95.0 && t < 98.2) pill(ctx, 650, 640, '+ BARITE', 'เพิ่มน้ำหนัก', HEX.barite, win(t, 95.0, 98.1, 0.3, 0.3), 36);
-    alarm(ctx, t, 97.3, 100.3, 'LOST CIRCULATION', 'โคลนหนักไป', 470, [249, 115, 22], 50, 650);
-    callout(ctx, t, 97.3, 100.3, [RH + 3.0, -32.6, 0.1], WG, 700, 1120, 'Fracture', 'รอยแตก', HEX.lost);
+    alarm(ctx, t, 91.2, 95.0, 'KICK!', 'Mud เบากว่า Pore Pressure', 470, [255, 20, 20], 80, 650);
+    callout(ctx, t, 91.8, 95.0, [-1.2, -31.0, 0.3], WG, 640, 1120, 'Gas', 'ดันเข้าหลุม', HEX.danger);
+    if (t > 95.0 && t < 98.2) pill(ctx, 650, 640, '+ Barite', 'เพิ่ม Mud Weight', HEX.barite, win(t, 95.0, 98.1, 0.3, 0.3), 36);
+    alarm(ctx, t, 97.3, 100.3, 'LOST CIRCULATION', 'Mud หนักเกิน Fracture Pressure', 470, [249, 115, 22], 50, 650);
+    callout(ctx, t, 97.3, 100.3, [RH + 3.0, -32.6, 0.1], WG, 700, 1120, 'Fracture', 'Mud รั่ว', HEX.lost);
     badge(ctx, t, 100.3, 103.4, 650, 470, 'JUST RIGHT', 'พอดี ✓', '#16a34a', 50);
   }
   // ---- TYPES
   if (t >= 103.4 && t < 113.6) {
-    chapter(ctx, t, 103.4, 113.4, '05', 'โคลน 3 แบบ', '3 TYPES OF MUD');
+    chapter(ctx, t, 103.4, 113.4, '05', 'Mud 3 แบบ', '3 TYPES OF MUD');
     typeCards(ctx, t);
   }
   // ---- END
@@ -1660,24 +1660,24 @@ function drawOverlay(ctx, t) {
 
 // ---------------------------------------------------------------- captions & cues
 const captions = [
-  { t0: 0, t1: 7, th: 'แท่นเจาะบนบก ใช้น้ำโคลนตลอดเวลาที่เจาะ', en: 'A land rig circulates mud the whole time it drills' },
-  { t0: 7, t1: 13, th: 'น้ำโคลนเจาะ ไม่ใช่แค่ดินผสมน้ำ', en: 'Drilling mud is not just dirt and water' },
-  { t0: 13, t1: 18, th: 'ของเหลวฐาน + สารเติมแต่ง เช่น แบไรต์', en: 'A base fluid plus additives like bentonite and barite' },
-  { t0: 18, t1: 25, th: 'ปั๊มดูดโคลนจากบ่อ แล้วอัดแรงดันขึ้นท่อตั้ง', en: 'Pumps pull mud from the pits and push it up the standpipe' },
-  { t0: 25, t1: 31.5, th: 'ผ่านสายยางและหัวขับ ลงไปในก้านเจาะ', en: 'Through the hose and top drive, down the drill pipe' },
-  { t0: 31.5, t1: 38.5, th: 'พุ่งออกหัวฉีดที่หัวเจาะ แล้วพาเศษหินขึ้นมา', en: 'It jets out of the bit nozzles and lifts the cuttings' },
-  { t0: 38.5, t1: 45, th: 'ตะแกรงสั่นแยกเศษหินออก โคลนไหลกลับลงบ่อ', en: 'Shale shakers remove cuttings; mud returns to the pits' },
-  { t0: 45, t1: 53, th: 'หน้าที่ 1: น้ำหนักโคลนกดแรงดันในหินไว้', en: 'Job 1: the mud column holds back formation pressure' },
-  { t0: 53, t1: 61, th: 'หน้าที่ 2: พาเศษหินขึ้นมา ให้หลุมสะอาด', en: 'Job 2: carry cuttings up and keep the hole clean' },
-  { t0: 61, t1: 69, th: 'หน้าที่ 3: ระบายความร้อนและหล่อลื่นหัวเจาะ', en: 'Job 3: cool and lubricate the bit' },
-  { t0: 69, t1: 77, th: 'หน้าที่ 4: ฉาบผนังหลุมด้วยแผ่นโคลนบาง ๆ', en: 'Job 4: a thin filter cake seals the hole wall' },
-  { t0: 77, t1: 85, th: 'หน้าที่ 5: ส่งข้อมูลขึ้นมาเป็นคลื่นแรงดัน', en: 'Job 5: MWD data travels up as mud-pressure pulses' },
-  { t0: 85, t1: 91, th: 'น้ำหนักโคลนต้องอยู่ในช่วงที่พอดี', en: 'Mud weight must stay inside a safe window' },
-  { t0: 91, t1: 97, th: 'เบาไป: ของเหลวในหินดันเข้าหลุม เกิด Kick', en: 'Too light: formation fluid flows in — a kick' },
-  { t0: 97, t1: 103, th: 'หนักไป: หินแตก โคลนไหลหายเข้าไปในหิน', en: 'Too heavy: the rock fractures and mud is lost' },
-  { t0: 103, t1: 108.5, th: 'โคลนมี 3 แบบ: ฐานน้ำ ฐานน้ำมัน สังเคราะห์', en: 'Three types: water-, oil- and synthetic-based' },
-  { t0: 108.5, t1: 114, th: 'เลือกตามสภาพหลุม ต้นทุน และสิ่งแวดล้อม', en: 'Chosen by well conditions, cost and environment' },
-  { t0: 114, t1: 120, th: 'น้ำโคลนเจาะ คือเลือดที่หล่อเลี้ยงหลุมเจาะ', en: 'Drilling mud: the lifeblood of the well' },
+  { t0: 0, t1: 7, th: 'แท่นเจาะบนบก ใช้ Mud ตลอดเวลาที่เจาะ', en: 'A land rig circulates mud the whole time it drills' },
+  { t0: 7, t1: 13, th: 'Drilling Mud ไม่ใช่แค่ดินผสมน้ำ', en: 'Drilling mud is not just dirt and water' },
+  { t0: 13, t1: 18, th: 'ของเหลวฐาน + Bentonite + Barite', en: 'A base fluid plus additives: bentonite, barite' },
+  { t0: 18, t1: 25, th: 'Mud Pump ดูด Mud จาก Pit ขึ้น Standpipe', en: 'Mud pumps pull mud from the pits up the standpipe' },
+  { t0: 25, t1: 31.5, th: 'ผ่าน Top Drive แล้วลงไปใน Drill Pipe', en: 'Through the top drive and down the drill pipe' },
+  { t0: 31.5, t1: 38.5, th: 'พุ่งออก Nozzle ของ Bit แล้วพา Cuttings ขึ้นมา', en: 'It jets out of the bit nozzles and lifts the cuttings' },
+  { t0: 38.5, t1: 45, th: 'Shale Shaker แยก Cuttings ออก Mud กลับลง Pit', en: 'Shale shakers remove cuttings; mud returns to the pits' },
+  { t0: 45, t1: 53, th: 'หน้าที่ 1: Hydrostatic Pressure คุมหลุมไว้', en: 'Job 1: the mud column holds back formation pressure' },
+  { t0: 53, t1: 61, th: 'หน้าที่ 2: พา Cuttings ขึ้นมา ให้หลุมสะอาด', en: 'Job 2: carry cuttings up and keep the hole clean' },
+  { t0: 61, t1: 69, th: 'หน้าที่ 3: ระบายความร้อนและหล่อลื่น Bit', en: 'Job 3: cool and lubricate the bit' },
+  { t0: 69, t1: 77, th: 'หน้าที่ 4: Filter Cake บาง ๆ ฉาบผนังหลุม', en: 'Job 4: a thin filter cake seals the hole wall' },
+  { t0: 77, t1: 85, th: 'หน้าที่ 5: MWD ส่งข้อมูลขึ้นมาเป็น Mud Pulse', en: 'Job 5: MWD data travels up as mud-pressure pulses' },
+  { t0: 85, t1: 91, th: 'Mud Weight ต้องอยู่ระหว่าง 2 เส้นนี้', en: 'Mud weight must stay between pore & fracture pressure' },
+  { t0: 91, t1: 97, th: 'เบากว่า Pore Pressure → เกิด Kick', en: 'Too light: formation fluid flows in — a kick' },
+  { t0: 97, t1: 103, th: 'หนักเกิน Fracture → Lost Circulation', en: 'Too heavy: the rock fractures and mud is lost' },
+  { t0: 103, t1: 108.5, th: 'Mud มี 3 แบบหลัก: WBM, OBM และ SBM', en: 'Three main types: water-, oil- and synthetic-based' },
+  { t0: 108.5, t1: 114, th: 'เลือกตามสภาพหลุม ต้นทุน สิ่งแวดล้อม', en: 'Chosen by well conditions, cost and environment' },
+  { t0: 114, t1: 120, th: 'Drilling Mud = เลือดของหลุมเจาะ', en: 'Drilling mud: the lifeblood of the well' },
 ];
 
 const cues = [
