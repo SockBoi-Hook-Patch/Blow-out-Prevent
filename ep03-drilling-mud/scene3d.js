@@ -174,7 +174,7 @@ function sackLabelTex() {
   x.fillStyle = '#d62828'; x.fillRect(0, 70, 512, 150);
   x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#ffffff';
   fitFont(x, 'BARITE', 600, 120, 460); x.fillText('BARITE', 256, 148);
-  x.fillStyle = '#1f2937'; fitFont(x, 'เพิ่มน้ำหนัก Mud', 600, 40, 440); x.fillText('เพิ่มน้ำหนัก Mud', 256, 270);
+  x.fillStyle = '#1f2937'; fitFont(x, 'เพิ่ม Mud Weight', 600, 40, 440); x.fillText('เพิ่ม Mud Weight', 256, 270);
   x.fillStyle = '#d62828'; x.fillRect(60, 320, 392, 6);
   x.fillStyle = '#111827'; fitFont(x, 'namman.story', 600, 84, 440); x.fillText('namman.story', 256, 410);
   x.fillStyle = '#374151'; fitFont(x, 'DRILLING GRADE · API 13A', 600, 32, 430); x.fillText('DRILLING GRADE · API 13A', 256, 490);
@@ -1484,7 +1484,7 @@ function windowGauge(ctx, t) {
 // ---- 3 mud types
 const TYPES = [
   { t: 104.0, tag: 'WBM', th: 'Water-Based', d: 'ใช้มากที่สุด · ราคาถูก', en: 'Water-based · most common, cheapest', col: HEX.wbm, ic: 'drop' },
-  { t: 105.6, tag: 'OBM', th: 'Oil-Based', d: 'Reactive Shale · หลุมร้อน', en: 'Oil-based · reactive shale, hot wells', col: HEX.obm, ic: 'oil' },
+  { t: 105.6, tag: 'OBM', th: 'Oil-Based', d: 'Reactive Shale · HPHT', en: 'Oil-based · reactive shale, hot wells', col: HEX.obm, ic: 'oil' },
   { t: 107.2, tag: 'SBM', th: 'Synthetic-Based', d: 'Offshore · กระทบสิ่งแวดล้อมน้อยกว่า', en: 'Synthetic · offshore, lower impact', col: HEX.sbm, ic: 'leaf' },
 ];
 function typeIcon(ctx, kind, x, y, col) {
@@ -1559,8 +1559,8 @@ function drawOverlay(ctx, t) {
     chapter(ctx, t, 8.0, 18.0, '01', 'ไม่ใช่แค่ดินโคลน', 'NOT JUST DIRT');
     callout(ctx, t, 9.0, 12.6, [18.25, 3.0, -2.2], L, 330, 560, 'Mud Tank', '', HEX.mud);
     callout(ctx, t, 9.5, 12.6, [18.25, 4.1, -4.0], L, 700, 700, 'Agitator', 'กวน Mud', HEX.pump);
-    callout(ctx, t, 14.0, 17.9, [16.1, 1.2, 3.0], L, 680, 560, 'Barite', 'เพิ่มน้ำหนัก', HEX.barite);
-    callout(ctx, t, 14.5, 17.9, [14.6, 1.2, 3.0], L, 330, 720, 'Bentonite', 'เพิ่มความหนืด', HEX.bent);
+    callout(ctx, t, 14.0, 17.9, [16.1, 1.2, 3.0], L, 680, 560, 'Barite', 'เพิ่ม Mud Weight', HEX.barite);
+    callout(ctx, t, 14.5, 17.9, [14.6, 1.2, 3.0], L, 330, 720, 'Bentonite', 'เพิ่ม Viscosity', HEX.bent);
   }
   // ---- CIRCULATION LOOP
   if (t >= 18 && t < 45.2) {
@@ -1662,7 +1662,7 @@ function drawOverlay(ctx, t) {
 const captions = [
   { t0: 0, t1: 7, th: 'แท่นเจาะบนบก ใช้ Mud ตลอดเวลาที่เจาะ', en: 'A land rig circulates mud the whole time it drills' },
   { t0: 7, t1: 13, th: 'Drilling Mud ไม่ใช่แค่ดินผสมน้ำ', en: 'Drilling mud is not just dirt and water' },
-  { t0: 13, t1: 18, th: 'ของเหลวฐาน + Bentonite + Barite', en: 'A base fluid plus additives: bentonite, barite' },
+  { t0: 13, t1: 18, th: 'Base Fluid + Bentonite + Barite', en: 'A base fluid plus additives: bentonite, barite' },
   { t0: 18, t1: 25, th: 'Mud Pump ดูด Mud จาก Pit ขึ้น Standpipe', en: 'Mud pumps pull mud from the pits up the standpipe' },
   { t0: 25, t1: 31.5, th: 'ผ่าน Top Drive แล้วลงไปใน Drill Pipe', en: 'Through the top drive and down the drill pipe' },
   { t0: 31.5, t1: 38.5, th: 'พุ่งออก Nozzle ของ Bit แล้วพา Cuttings ขึ้นมา', en: 'It jets out of the bit nozzles and lifts the cuttings' },
