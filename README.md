@@ -7,7 +7,7 @@
 | ตอน | โฟลเดอร์ | วิดีโอ |
 |---|---|---|
 | EP01 Subsea BOP (3D) | `bop-3d/` | `video/namman_subsea_BOP.mp4` |
-| EP02 Surface BOP vs Subsea BOP | `ep02-surface-vs-subsea/` | `video/namman_EP02_surface_vs_subsea.mp4` (กำลังทำ) |
+| EP02 Surface BOP vs Subsea BOP | `ep02-surface-vs-subsea/` | `video/namman_EP02_surface_vs_subsea_VO.mp4` (มีเสียงพากย์), `video/namman_EP02_surface_vs_subsea.mp4` (ไม่มีเสียงพากย์) |
 | BOP (8-bit, ต้นแบบแรก) | `audio.js`, `scenes.js`, `render/` | `video/BOP_8bit_loop.mp4` |
 
 ## Render ตอน 3D
@@ -26,3 +26,9 @@ node render.js ../video/p.mp4 --preview 3,20,40            # ดูภาพน�
 
 ## แบรนด์
 - `brand/` — รูปโปรไฟล์และไฟล์ต้นฉบับ
+
+## เสียงพากย์ (ElevenLabs)
+บทพากย์อยู่ใน `<ตอน>/vo/script.json` ไฟล์เสียง `voNN.mp3` แล้วผสมเข้าวิดีโอด้วย
+```bash
+python3 tools/mix_vo.py video/<ตอน>.mp4 <ตอน>/vo video/<ตอน>_VO.mp4
+```
