@@ -65,7 +65,7 @@ fc += (f";{''.join(labels)}amix=inputs={n}:normalize=0,volume={vo_gain_db:.2f}dB
 fc += ";[0:a]volume=0.85[mus]"
 # smooth ducking: slower attack/release so the music breathes instead of pumping
 fc += ";[mus][sc]sidechaincompress=threshold=0.025:ratio=5:attack=60:release=900:knee=6:makeup=1[duck]"
-fc += ";[duck][vo]amix=inputs=2:normalize=0,alimiter=limit=0.89:attack=5:release=60[aout]"
+fc += ";[duck][vo]amix=inputs=2:normalize=0,alimiter=limit=0.84:attack=5:release=60:level=0[aout]"
 
 cmd = ['ffmpeg', '-y', '-loglevel', 'error', *inputs, '-filter_complex', fc,
        '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k',

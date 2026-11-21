@@ -9,7 +9,7 @@
 | EP01 Subsea BOP (3D) | `bop-3d/` | `video/namman_subsea_BOP.mp4` |
 | EP02 Surface BOP vs Subsea BOP | `ep02-surface-vs-subsea/` | `video/namman_EP02_surface_vs_subsea_VO.mp4` (เสียงพากย์ Pikiir), `video/namman_EP02_surface_vs_subsea_VO_pepe.mp4` (เสียง Pepe), `video/namman_EP02_surface_vs_subsea.mp4` (ไม่มีเสียงพากย์) |
 | BOP (8-bit, ต้นแบบแรก) | `audio.js`, `scenes.js`, `render/` | `video/BOP_8bit_loop.mp4` |
-| EP03 น้ำโคลนเจาะ (Drilling Mud) | `ep03-drilling-mud/` | `video/namman_EP03_drilling_mud.mp4` |
+| EP03 น้ำโคลนเจาะ (Drilling Mud) | `ep03-drilling-mud/` | `video/namman_EP03_drilling_mud_VO.mp4` (เสียงพากย์ Gamo), `video/namman_EP03_drilling_mud.mp4` (ไม่มีเสียงพากย์) |
 
 ## Render ตอน 3D
 ```bash
