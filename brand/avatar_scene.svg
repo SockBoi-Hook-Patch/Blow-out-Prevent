@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <!-- namman.story avatar — flat illustration, faceless worker, offshore scene (original artwork) -->
+  <defs>
+    <clipPath id="c"><circle cx="540" cy="540" r="540"/></clipPath>
+  </defs>
+  <g clip-path="url(#c)">
+    <!-- sky -->
+    <rect width="1080" height="1080" fill="#9ec9d4"/>
+    <rect y="0" width="1080" height="260" fill="#8dbecb"/>
+    <!-- sun -->
+    <circle cx="400" cy="330" r="64" fill="#f6d79a"/>
+    <!-- clouds -->
+    <g fill="#ffffff">
+      <path d="M140 210 a40 40 0 0 1 70 -26 a52 52 0 0 1 96 18 a34 34 0 0 1 8 66 h-170 a30 30 0 0 1 -4 -58 z"/>
+      <path d="M700 150 a34 34 0 0 1 60 -20 a44 44 0 0 1 82 16 a28 28 0 0 1 6 56 h-146 a26 26 0 0 1 -2 -52 z"/>
+    </g>
+
+    <!-- far offshore platform (silhouette) -->
+    <g fill="#6aa3b4">
+      <rect x="120" y="520" width="200" height="22"/>
+      <rect x="140" y="542" width="14" height="80"/><rect x="290" y="542" width="14" height="80"/>
+      <rect x="160" y="470" width="70" height="50"/>
+      <path d="M245 520 L262 360 L276 360 L293 520 Z"/>
+      <rect x="258" y="340" width="22" height="22"/>
+    </g>
+    <!-- mid offshore rig with derrick -->
+    <g fill="#4f8799">
+      <rect x="560" y="560" width="400" height="34"/>
+      <rect x="590" y="594" width="34" height="120"/><rect x="890" y="594" width="34" height="120"/>
+      <rect x="600" y="490" width="120" height="70"/>
+      <rect x="610" y="500" width="22" height="14" fill="#9ec9d4"/><rect x="644" y="500" width="22" height="14" fill="#9ec9d4"/><rect x="678" y="500" width="22" height="14" fill="#9ec9d4"/>
+      <!-- derrick -->
+      <path d="M760 560 L800 250 L830 250 L870 560 L848 560 L815 290 L782 560 Z"/>
+      <rect x="792" y="230" width="46" height="26"/>
+      <path d="M775 470 L855 470 L858 484 L772 484 Z"/>
+      <path d="M786 380 L844 380 L846 392 L784 392 Z"/>
+      <path d="M796 310 L834 310 L836 320 L794 320 Z"/>
+      <!-- crane -->
+      <rect x="930" y="430" width="16" height="130"/>
+      <path d="M938 436 L1060 380 L1064 392 L944 450 Z"/>
+      <!-- flare -->
+      <path d="M560 576 L470 470 L480 462 L570 566 Z"/>
+    </g>
+    <path d="M472 466 C460 440 474 424 482 408 C486 428 500 440 490 466 Z" fill="#f29b38"/>
+
+    <!-- sea bands -->
+    <rect y="700" width="1080" height="380" fill="#3f7891"/>
+    <path d="M0 700 Q90 684 180 700 T360 700 T540 700 T720 700 T900 700 T1080 700 V740 H0 Z" fill="#4d8aa2"/>
+    <rect y="800" width="1080" height="280" fill="#2f6480"/>
+    <path d="M0 800 Q90 786 180 800 T360 800 T540 800 T720 800 T900 800 T1080 800 V830 H0 Z" fill="#356d89"/>
+    <rect y="900" width="1080" height="180" fill="#244f6b"/>
+
+    <!-- ===== worker (faceless, 3/4 view facing left) ===== -->
+    <!-- legs / lower body -->
+    <path d="M400 860 L700 860 L720 1080 L390 1080 Z" fill="#e8662a"/>
+    <!-- torso -->
+    <path d="M380 690 C380 640 430 610 500 600 L620 600 C690 610 730 650 730 700 L740 880 L370 880 Z" fill="#f27d2c"/>
+    <!-- shading side -->
+    <path d="M620 600 C690 610 730 650 730 700 L740 880 L640 880 Z" fill="#e8662a"/>
+    <!-- belt line -->
+    <rect x="372" y="860" width="368" height="22" fill="#d9581f"/>
+    <!-- reflective chest stripe -->
+    <path d="M378 760 L736 740 L738 772 L378 792 Z" fill="#eef3f6"/>
+    <!-- reflective leg stripes -->
+    <path d="M396 990 L716 990 L719 1022 L394 1022 Z" fill="#eef3f6"/>
+    <!-- collar -->
+    <path d="M480 604 L548 690 L560 600 Z" fill="#d9581f"/>
+    <path d="M640 606 L572 690 L560 600 Z" fill="#d9581f"/>
+    <path d="M520 600 L560 650 L600 600 Z" fill="#ffffff"/>
+    <!-- zipper -->
+    <rect x="554" y="660" width="10" height="200" fill="#d9581f"/>
+    <!-- chest pocket -->
+    <rect x="410" y="690" width="90" height="56" rx="6" fill="#e8662a"/>
+
+    <!-- right arm (viewer's right): elbow down, hand at shoulder, wrench resting on shoulder -->
+    <!-- wrench (behind hand) -->
+    <g fill="#9aa7b1">
+      <path d="M676 640 L700 626 L842 440 L820 424 Z"/>
+      <!-- open-end head -->
+      <path d="M806 446 C786 420 790 380 822 364 L834 392 C822 400 822 414 830 422 L858 410 C872 440 856 476 826 482 Z"/>
+    </g>
+    <!-- upper arm -->
+    <path d="M688 636 C736 626 772 660 774 712 L778 812 L722 814 L718 716 C716 690 704 672 688 670 Z" fill="#f27d2c"/>
+    <path d="M720 774 L776 772 L777 800 L721 802 Z" fill="#eef3f6"/>
+    <!-- forearm folding up toward the shoulder -->
+    <path d="M722 814 L778 812 C780 790 752 720 700 660 L668 690 C700 730 716 780 722 814 Z" fill="#e8662a"/>
+    <!-- glove gripping wrench -->
+    <circle cx="684" cy="656" r="32" fill="#f4f6f8"/>
+    <path d="M664 646 h40" stroke="#dde3e8" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- left arm resting (viewer's left) -->
+    <path d="M392 660 C360 676 344 720 346 780 L352 880 L404 880 L406 780 C408 740 414 712 430 690 Z" fill="#f27d2c"/>
+    <path d="M348 806 L404 806 L404 836 L349 836 Z" fill="#eef3f6"/>
+    <circle cx="378" cy="896" r="30" fill="#f4f6f8"/>
+
+    <!-- neck -->
+    <path d="M520 560 L600 560 L596 612 L524 612 Z" fill="#c98762"/>
+    <!-- head (faceless, 3/4 to the left) -->
+    <ellipse cx="556" cy="488" rx="96" ry="108" fill="#e3a27a"/>
+    <!-- hair at back/right -->
+    <path d="M610 430 C664 450 666 540 630 580 C640 530 636 480 600 450 Z" fill="#2c2f3a"/>
+    <!-- ear -->
+    <ellipse cx="626" cy="500" rx="16" ry="24" fill="#c98762"/>
+    <!-- safety glasses -->
+    <path d="M462 470 L604 470 C610 470 612 476 610 482 L602 506 C600 512 594 514 588 514 L478 514 C470 514 464 510 462 502 Z" fill="#26344a"/>
+    <path d="M478 476 L540 476 L534 490 L474 490 Z" fill="#4c6588" opacity="0.8"/>
+    <rect x="604" y="478" width="30" height="10" rx="4" fill="#26344a"/>
+
+    <!-- hard hat (white) -->
+    <path d="M452 430 C452 340 506 300 566 300 C630 300 676 344 678 430 Z" fill="#ffffff"/>
+    <path d="M420 424 L690 424 C700 424 704 436 696 444 L688 452 L430 452 C416 452 410 434 420 424 Z" fill="#ffffff"/>
+    <path d="M424 440 L700 440 L688 452 L430 452 Z" fill="#d6dee5"/>
+    <path d="M560 304 C540 330 530 380 532 426" stroke="#e5ebf0" stroke-width="20" stroke-linecap="round" fill="none"/>
+    <!-- oil-drop badge -->
+    <circle cx="616" cy="378" r="26" fill="#2f6480"/>
+    <path d="M616 358 C625 371 632 380 632 389 A16 16 0 0 1 600 389 C600 380 607 371 616 358 Z" fill="#f27d2c"/>
+  </g>
+</svg>
