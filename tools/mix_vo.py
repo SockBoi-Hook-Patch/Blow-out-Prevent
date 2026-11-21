@@ -17,6 +17,17 @@ def dur(f):
     return float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration',
                                           '-of', 'csv=p=0', f]).decode().strip())
 
+def mean_db(files):
+    out = subprocess.run(['ffmpeg', '-v', 'info', '-i', 'concat:' + '|'.join(files), '-af', 'volumedetect',
+                          '-f', 'null', '-'], capture_output=True, text=True).stderr
+    return float(out.split('mean_volume:')[1].split('dB')[0])
+
+# normalise every voice to the same speech level so a softer voice isn't buried
+VO_TARGET_DB = -15.0
+vo_files = [os.path.join(vo_dir, f"vo{seg['id']:02d}.mp3") for seg in script]
+vo_gain_db = VO_TARGET_DB - mean_db(vo_files)
+print(f"voice level gain {vo_gain_db:+.1f} dB")
+
 inputs, chains, labels = ['-i', src], [], []
 for k, seg in enumerate(script, start=1):
     f = os.path.join(vo_dir, f"vo{seg['id']:02d}.mp3")
@@ -34,7 +45,7 @@ for k, seg in enumerate(script, start=1):
 
 n = len(script)
 fc = ';'.join(chains)
-fc += f";{''.join(labels)}amix=inputs={n}:normalize=0,highpass=f=80,acompressor=threshold=-20dB:ratio=3:attack=5:release=120,volume=2.2,asplit=2[vo][sc]"
+fc += f";{''.join(labels)}amix=inputs={n}:normalize=0,highpass=f=80,volume={vo_gain_db:.2f}dB,acompressor=threshold=-20dB:ratio=3:attack=5:release=120,volume=2.2,asplit=2[vo][sc]"
 fc += ";[0:a]volume=0.85[mus]"
 fc += ";[mus][sc]sidechaincompress=threshold=0.03:ratio=6:attack=20:release=400:makeup=1[duck]"
 fc += ";[duck][vo]amix=inputs=2:normalize=0,alimiter=limit=0.89[aout]"
