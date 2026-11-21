@@ -1,3 +1,4 @@
 render/.render-*
 node_modules/
 render/fonts/*.ttf
+video/.render-*
