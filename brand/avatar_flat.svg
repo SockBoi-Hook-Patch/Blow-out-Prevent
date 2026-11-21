@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <!-- namman.story avatar — minimal flat vector -->
+  <rect width="1080" height="1080" fill="#0f4c5c"/>
+  <circle cx="540" cy="540" r="430" fill="#13606f"/>
+
+  <!-- body: orange coverall -->
+  <path d="M190 1080 C190 860 330 770 540 770 C750 770 890 860 890 1080 Z" fill="#f7882f"/>
+  <!-- collar -->
+  <path d="M430 778 L540 880 L650 778 L610 770 L540 840 L470 770 Z" fill="#e06d17"/>
+  <!-- undershirt V -->
+  <path d="M478 772 L540 832 L602 772 Z" fill="#0f4c5c"/>
+  <!-- zipper -->
+  <rect x="534" y="880" width="12" height="200" fill="#e06d17"/>
+  <!-- reflective stripe -->
+  <path d="M214 960 L866 960 L876 1010 L204 1010 Z" fill="#e9eef2"/>
+  <!-- pocket -->
+  <rect x="610" y="880" width="110" height="60" rx="10" fill="#e06d17"/>
+
+  <!-- neck -->
+  <rect x="490" y="690" width="100" height="100" rx="20" fill="#d99a6c"/>
+
+  <!-- head -->
+  <circle cx="540" cy="540" r="190" fill="#f0b48a"/>
+  <!-- ears -->
+  <circle cx="352" cy="560" r="36" fill="#f0b48a"/>
+  <circle cx="728" cy="560" r="36" fill="#f0b48a"/>
+
+  <!-- face -->
+  <circle cx="470" cy="560" r="20" fill="#1d2b36"/>
+  <circle cx="610" cy="560" r="20" fill="#1d2b36"/>
+  <circle cx="430" cy="625" r="26" fill="#ef8f7a" opacity="0.55"/>
+  <circle cx="650" cy="625" r="26" fill="#ef8f7a" opacity="0.55"/>
+  <path d="M478 630 Q540 700 602 630 Z" fill="#1d2b36"/>
+  <path d="M500 655 Q540 690 580 655 Q540 672 500 655 Z" fill="#ef6f6c"/>
+
+  <!-- hard hat -->
+  <path d="M345 470 C345 330 430 255 540 255 C650 255 735 330 735 470 Z" fill="#ffffff"/>
+  <rect x="300" y="458" width="480" height="44" rx="22" fill="#ffffff"/>
+  <rect x="300" y="486" width="480" height="16" rx="8" fill="#d8e0e6"/>
+  <rect x="518" y="258" width="44" height="205" rx="18" fill="#e7edf1"/>
+  <!-- oil-drop badge -->
+  <circle cx="640" cy="390" r="38" fill="#0f4c5c"/>
+  <path d="M640 362 C652 380 662 393 662 405 A22 22 0 0 1 618 405 C618 393 628 380 640 362 Z" fill="#f7882f"/>
+</svg>
